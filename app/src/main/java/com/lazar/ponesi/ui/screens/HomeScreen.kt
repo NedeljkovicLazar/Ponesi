@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.lazar.ponesi.data.model.Travel
 import com.lazar.ponesi.ui.components.AppTopBar
 import com.lazar.ponesi.ui.components.TravelCard
-import com.lazar.ponesi.ui.components.TravelStatus
+import com.lazar.ponesi.data.model.TravelStatus
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.Row

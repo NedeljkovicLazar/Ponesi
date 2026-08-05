@@ -1,6 +1,5 @@
 package com.lazar.ponesi.data.model
 
-import com.lazar.ponesi.ui.components.TravelStatus
 import java.time.LocalDate
 
 data class Travel(

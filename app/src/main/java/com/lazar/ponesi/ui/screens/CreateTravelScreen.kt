@@ -1,16 +1,15 @@
 package com.lazar.ponesi.ui.screens
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.padding
 import com.lazar.ponesi.ui.components.AppTopBar
 
 
 @Composable
-fun DocumentsScreen(
+fun CreateTravelScreen(
     onBackClick: () -> Unit
 ) {
 
@@ -19,7 +18,7 @@ fun DocumentsScreen(
         topBar = {
 
             AppTopBar(
-                title = "Dokumenta",
+                title = "Novi šablon",
                 showBackButton = true,
                 onBackClick = onBackClick
             )
@@ -29,10 +28,8 @@ fun DocumentsScreen(
     ) { paddingValues ->
 
         Text(
-            text = "Ovde će biti putna dokumenta",
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+            text = "Kreiranje putovanja",
+            modifier = Modifier.padding(paddingValues)
         )
 
     }

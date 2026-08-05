@@ -16,9 +16,16 @@ import com.lazar.ponesi.data.model.Travel
 import com.lazar.ponesi.ui.components.AppTopBar
 import com.lazar.ponesi.ui.components.TravelCard
 import com.lazar.ponesi.ui.components.TravelStatus
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    onDocumentsClick: () -> Unit,
+    onCreateTravelClick: () -> Unit
+) {
 
     val travels = listOf(
 
@@ -46,9 +53,53 @@ fun HomeScreen() {
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Putovanja"
+                title = "Putovanja",
+                showFilter = true,
+                showSort = true
             )
+        },
+
+        bottomBar = {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        onDocumentsClick()
+                    }
+                ) {
+
+                    Text(
+                        text = "Dokumenta"
+                    )
+
+                }
+
+
+                Button(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        onCreateTravelClick()
+                    }
+                ) {
+
+                    Text(
+                        text = "Novi šablon"
+                    )
+
+                }
+
+            }
+
         }
+
     ) { paddingValues ->
 
 

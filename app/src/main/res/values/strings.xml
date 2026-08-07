@@ -15,6 +15,8 @@
     <string name="action_save">Sačuvaj</string>
     <string name="action_add_item">Dodaj stavku</string>
     <string name="action_add_category">+ Dodaj kategoriju</string>
+    <string name="action_add">Dodaj</string>
+    <string name="action_cancel">Otkaži</string>
 
     <!-- Home -->
     <string name="button_documents">Dokumenta</string>
@@ -29,8 +31,12 @@
     <!-- Create template -->
     <string name="label_template_name">Naziv šablona</string>
     <string name="label_categories">Kategorije</string>
+    <string name="title_add_category">Dodaj kategoriju</string>
+    <string name="label_category_name">Naziv kategorije</string>
+    <string name="label_item_name">Naziv stavke</string>
 
     <!-- Documents -->
     <string name="documents_placeholder">Ovde će biti putna dokumenta</string>
+
 
 </resources>

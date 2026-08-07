@@ -13,81 +13,26 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import com.lazar.ponesi.data.model.Category
-import com.lazar.ponesi.data.model.PackingItem
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.lazar.ponesi.R
 import com.lazar.ponesi.ui.components.AppTopBar
 import com.lazar.ponesi.ui.components.CategoryCard
 import com.lazar.ponesi.ui.components.PrimaryButton
 import com.lazar.ponesi.ui.theme.Dimens
-import androidx.compose.ui.res.stringResource
-import com.lazar.ponesi.R
+import com.lazar.ponesi.viewmodel.CreateTravelViewModel
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 
 @Composable
 fun CreateTravelScreen(
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    createTravelViewModel: CreateTravelViewModel = viewModel()
 ) {
 
-    var travelName by rememberSaveable {
-        mutableStateOf("")
-    }
-
-    val categories = remember {
-        listOf(
-            Category(
-                id = 1,
-                name = "Kofer",
-                items = listOf(
-                    PackingItem(
-                        id = 1,
-                        name = "Majice"
-                    ),
-                    PackingItem(
-                        id = 2,
-                        name = "Pantalone"
-                    ),
-                    PackingItem(
-                        id = 3,
-                        name = "Donji veš"
-                    )
-                )
-            ),
-
-            Category(
-                id = 2,
-                name = "Ranac",
-                items = listOf(
-                    PackingItem(
-                        id = 4,
-                        name = "Punjač"
-                    ),
-                    PackingItem(
-                        id = 5,
-                        name = "Slušalice"
-                    )
-                )
-            ),
-
-            Category(
-                id = 3,
-                name = "Neseser",
-                items = listOf(
-                    PackingItem(
-                        id = 6,
-                        name = "Četkica za zube"
-                    ),
-                    PackingItem(
-                        id = 7,
-                        name = "Pasta za zube"
-                    )
-                )
-            )
-        )
-    }
+    val uiState by createTravelViewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -108,11 +53,10 @@ fun CreateTravelScreen(
         ) {
 
             item {
-
                 OutlinedTextField(
-                    value = travelName,
+                    value = uiState.name,
                     onValueChange = { newName ->
-                        travelName = newName
+                        createTravelViewModel.onNameChange(newName)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     label = {
@@ -122,58 +66,152 @@ fun CreateTravelScreen(
                     },
                     singleLine = true
                 )
-
             }
 
             item {
-
                 Text(
                     text = stringResource(R.string.label_categories)
                 )
-
             }
 
-            items(categories) { category ->
-
+            items(uiState.categories) { category ->
                 CategoryCard(
                     category = category,
                     onAddItemClick = {
-                        println("Dodaj stavku u ${category.name}")
+                        createTravelViewModel.showAddItemDialog(
+                            category.id
+                        )
                     }
                 )
-
             }
 
             item {
-
                 OutlinedButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        println("Dodaj kategoriju")
+                        createTravelViewModel.showAddCategoryDialog()
                     }
                 ) {
-
                     Text(
                         text = stringResource(R.string.action_add_category)
                     )
-
                 }
-
             }
 
             item {
-
                 PrimaryButton(
                     text = stringResource(R.string.action_save),
                     onClick = {
-                        println("Sačuvaj šablon: $travelName")
+                        println("Sačuvaj šablon: ${uiState.name}")
                     }
                 )
-
             }
-
         }
-
     }
+    if (uiState.isAddCategoryDialogVisible) {
 
+        AlertDialog(
+            onDismissRequest = {
+                createTravelViewModel.hideAddCategoryDialog()
+            },
+
+            title = {
+                Text(
+                    text = stringResource(R.string.title_add_category)
+                )
+            },
+
+            text = {
+                OutlinedTextField(
+                    value = uiState.newCategoryName,
+                    onValueChange = { newName ->
+                        createTravelViewModel.onNewCategoryNameChange(newName)
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.label_category_name)
+                        )
+                    },
+                    singleLine = true
+                )
+            },
+
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        createTravelViewModel.addCategory()
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_add)
+                    )
+                }
+            },
+
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        createTravelViewModel.hideAddCategoryDialog()
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_cancel)
+                    )
+                }
+            }
+        )
+    }
+    if (uiState.selectedCategoryId != null) {
+
+        AlertDialog(
+            onDismissRequest = {
+                createTravelViewModel.hideAddItemDialog()
+            },
+
+            title = {
+                Text(
+                    text = stringResource(R.string.action_add_item)
+                )
+            },
+
+            text = {
+                OutlinedTextField(
+                    value = uiState.newItemName,
+                    onValueChange = { newName ->
+                        createTravelViewModel.onNewItemNameChange(newName)
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(R.string.label_item_name)
+                        )
+                    },
+                    singleLine = true
+                )
+            },
+
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        createTravelViewModel.addItem()
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_add)
+                    )
+                }
+            },
+
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        createTravelViewModel.hideAddItemDialog()
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.action_cancel)
+                    )
+                }
+            }
+        )
+    }
 }

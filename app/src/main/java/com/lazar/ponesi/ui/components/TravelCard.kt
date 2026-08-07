@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
@@ -17,45 +18,56 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import com.lazar.ponesi.ui.theme.Dimens
+import com.lazar.ponesi.ui.theme.TravelActiveColor
+import com.lazar.ponesi.ui.theme.TravelInactiveColor
+import com.lazar.ponesi.ui.theme.TravelScheduledColor
+import androidx.compose.ui.res.stringResource
+import com.lazar.ponesi.R
 import com.lazar.ponesi.data.model.TravelStatus
+import com.lazar.ponesi.data.model.Travel
 
 @Composable
 fun TravelCard(
-    title: String,
-    status: TravelStatus,
-    daysUntil: Int? = null,
+    travel: Travel,
     onClick: () -> Unit = {},
     onEditClick: () -> Unit = {}
 ) {
 
-    val borderColor = when (status) {
-        TravelStatus.INACTIVE -> Color.Gray
-        TravelStatus.ACTIVE -> Color(0xFF4CAF50)
-        TravelStatus.SCHEDULED -> Color(0xFF2196F3)
+    val borderColor = when (travel.status) {
+        TravelStatus.INACTIVE -> TravelInactiveColor
+        TravelStatus.ACTIVE -> TravelActiveColor
+        TravelStatus.SCHEDULED -> TravelScheduledColor
     }
 
-    val statusText = when (status) {
-        TravelStatus.INACTIVE -> "Neaktivno"
-        TravelStatus.ACTIVE -> "Aktivno"
+    val statusText = when (travel.status) {
+        TravelStatus.INACTIVE ->
+            stringResource(R.string.status_inactive)
+
+        TravelStatus.ACTIVE ->
+            stringResource(R.string.status_active)
+
         TravelStatus.SCHEDULED ->
-            if (daysUntil != null)
-                "Za $daysUntil dana"
-            else
-                "Zakazano"
+            stringResource(R.string.status_scheduled)
     }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        border = BorderStroke(2.dp, borderColor),
+
+        shape = RoundedCornerShape(Dimens.CardCornerRadius),
+
+        border = BorderStroke(
+            Dimens.StatusBorderWidth,
+            borderColor
+        ),
+
         colors = CardDefaults.cardColors()
     ) {
 
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(Dimens.SpacingLarge)
         ) {
 
             Row(
@@ -64,14 +76,16 @@ fun TravelCard(
             ) {
 
                 Text(
-                    text = title,
+                    text = travel.name,
                     style = MaterialTheme.typography.titleMedium
                 )
 
-                IconButton(onClick = onEditClick) {
+                IconButton(
+                    onClick = onEditClick
+                ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Izmeni"
+                        contentDescription = stringResource(R.string.action_edit)
                     )
                 }
             }

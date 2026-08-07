@@ -4,19 +4,19 @@ import androidx.compose.ui.unit.dp
 
 object Dimens {
 
-    val ExtraSmall = 4.dp
+    // Spacing
+    val SpacingExtraSmall = 4.dp
+    val SpacingSmall = 8.dp
+    val SpacingMedium = 12.dp
+    val SpacingLarge = 16.dp
+    val SpacingExtraLarge = 24.dp
+    val SpacingHuge = 32.dp
 
-    val Small = 8.dp
+    // Corners
+    val CardCornerRadius = 16.dp
+    val ButtonCornerRadius = 12.dp
 
-    val Medium = 16.dp
-
-    val Large = 24.dp
-
-    val ExtraLarge = 32.dp
-
-    val CardCorner = 16.dp
-
-    val ButtonCorner = 12.dp
-
-    val CardBorder = 2.dp
+    // Borders
+    val ThinBorderWidth = 1.dp
+    val StatusBorderWidth = 2.dp
 }

@@ -6,5 +6,6 @@ data class Travel(
     val id: Int,
     val name: String,
     val status: TravelStatus,
+    val categories: List<Category> = emptyList(),
     val date: LocalDate? = null
 )

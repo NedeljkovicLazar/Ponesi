@@ -10,7 +10,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-
+import androidx.compose.ui.res.stringResource
+import com.lazar.ponesi.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,7 +45,7 @@ fun AppTopBar(
 
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Nazad"
+                        contentDescription = stringResource(R.string.action_back)
                     )
 
                 }
@@ -63,7 +64,7 @@ fun AppTopBar(
 
                     Icon(
                         imageVector = Icons.Default.FilterList,
-                        contentDescription = "Filter"
+                        contentDescription = stringResource(R.string.action_filter)
                     )
 
                 }
@@ -79,7 +80,7 @@ fun AppTopBar(
 
                     Icon(
                         imageVector = Icons.Default.Sort,
-                        contentDescription = "Sort"
+                        contentDescription = stringResource(R.string.action_sort)
                     )
 
                 }

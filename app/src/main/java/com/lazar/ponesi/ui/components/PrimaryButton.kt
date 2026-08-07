@@ -19,7 +19,7 @@ fun PrimaryButton(
     Button(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(Dimens.ButtonCorner),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(Dimens.ButtonCornerRadius),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary
         )

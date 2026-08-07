@@ -1,3 +1,36 @@
 <resources>
+
     <string name="app_name">Ponesi</string>
+
+    <!-- Screen titles -->
+    <string name="title_travels">Putovanja</string>
+    <string name="title_documents">Dokumenta</string>
+    <string name="title_new_template">Novi šablon</string>
+
+    <!-- General actions -->
+    <string name="action_back">Nazad</string>
+    <string name="action_filter">Filter</string>
+    <string name="action_sort">Sortiraj</string>
+    <string name="action_edit">Izmeni</string>
+    <string name="action_save">Sačuvaj</string>
+    <string name="action_add_item">Dodaj stavku</string>
+    <string name="action_add_category">+ Dodaj kategoriju</string>
+
+    <!-- Home -->
+    <string name="button_documents">Dokumenta</string>
+    <string name="button_new_template">Novi šablon</string>
+
+    <!-- Travel statuses -->
+    <string name="status_inactive">Neaktivno</string>
+    <string name="status_active">Aktivno</string>
+    <string name="status_scheduled">Zakazano</string>
+    <string name="status_days_until">Za %1$d dana</string>
+
+    <!-- Create template -->
+    <string name="label_template_name">Naziv šablona</string>
+    <string name="label_categories">Kategorije</string>
+
+    <!-- Documents -->
+    <string name="documents_placeholder">Ovde će biti putna dokumenta</string>
+
 </resources>

@@ -10,5 +10,8 @@ data class CreateTravelUiState(
     val newCategoryName: String = "",
 
     val selectedCategoryId: Int? = null,
-    val newItemName: String = ""
+    val newItemName: String = "",
+
+    val isSaving: Boolean = false,
+    val isSaveComplete: Boolean = false
 )

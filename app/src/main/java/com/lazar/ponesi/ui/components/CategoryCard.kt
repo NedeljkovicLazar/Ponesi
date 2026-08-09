@@ -3,6 +3,7 @@ package com.lazar.ponesi.ui.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,18 +13,19 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.lazar.ponesi.data.model.Category
-import com.lazar.ponesi.ui.theme.Dimens
 import androidx.compose.ui.res.stringResource
 import com.lazar.ponesi.R
-
+import com.lazar.ponesi.data.model.Category
+import com.lazar.ponesi.ui.theme.Dimens
 @Composable
 fun CategoryCard(
     category: Category,
-    onAddItemClick: () -> Unit = {}
+    onAddItemClick: () -> Unit,
+    onRemoveCategoryClick: () -> Unit,
+    onRemoveItemClick: (Int) -> Unit
 ) {
-
     Card(
         modifier = Modifier.fillMaxWidth(),
 
@@ -42,18 +44,50 @@ fun CategoryCard(
             verticalArrangement = Arrangement.spacedBy(Dimens.SpacingMedium)
         ) {
 
-            Text(
-                text = category.name,
-                style = MaterialTheme.typography.titleMedium
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = category.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+
+                RemoveIconButton(
+                    onClick = onRemoveCategoryClick,
+                    contentDescription = stringResource(
+                        R.string.action_remove_category
+                    )
+                )
+            }
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
             ) {
+
                 category.items.forEach { item ->
-                    Text(
-                        text = "• ${item.name}"
-                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Text(
+                            text = "• ${item.name}",
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        RemoveIconButton(
+                            onClick = {
+                                onRemoveItemClick(item.id)
+                            },
+                            contentDescription = stringResource(
+                                R.string.action_remove_item
+                            )
+                        )
+                    }
                 }
             }
 

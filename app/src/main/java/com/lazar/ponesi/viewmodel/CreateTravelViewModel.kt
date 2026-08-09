@@ -6,8 +6,13 @@ import com.lazar.ponesi.data.model.PackingItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import androidx.lifecycle.viewModelScope
+import com.lazar.ponesi.data.repository.TravelRepository
+import kotlinx.coroutines.launch
 
-class CreateTravelViewModel : ViewModel() {
+class CreateTravelViewModel(
+    private val travelRepository: TravelRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
         CreateTravelUiState(
@@ -171,6 +176,79 @@ class CreateTravelViewModel : ViewModel() {
             categories = updatedCategories,
             selectedCategoryId = null,
             newItemName = ""
+        )
+    }
+
+    fun saveTravel() {
+
+        val currentState = _uiState.value
+
+        val travelName = currentState.name.trim()
+
+        if (
+            travelName.isBlank() ||
+            currentState.categories.isEmpty() ||
+            currentState.isSaving
+        ) {
+            return
+        }
+
+        _uiState.value = currentState.copy(
+            isSaving = true
+        )
+
+        viewModelScope.launch {
+
+            try {
+
+                travelRepository.saveTravel(
+                    name = travelName,
+                    categories = currentState.categories
+                )
+
+                _uiState.value = _uiState.value.copy(
+                    isSaving = false,
+                    isSaveComplete = true
+                )
+
+            } catch (exception: Exception) {
+
+                _uiState.value = _uiState.value.copy(
+                    isSaving = false
+                )
+
+                exception.printStackTrace()
+            }
+        }
+    }
+
+    fun removeCategory(categoryId: Int) {
+        _uiState.value = _uiState.value.copy(
+            categories = _uiState.value.categories.filterNot { category ->
+                category.id == categoryId
+            }
+        )
+    }
+
+    fun removeItem(
+        categoryId: Int,
+        itemId: Int
+    ) {
+        val updatedCategories = _uiState.value.categories.map { category ->
+
+            if (category.id == categoryId) {
+                category.copy(
+                    items = category.items.filterNot { item ->
+                        item.id == itemId
+                    }
+                )
+            } else {
+                category
+            }
+        }
+
+        _uiState.value = _uiState.value.copy(
+            categories = updatedCategories
         )
     }
 }

@@ -16,7 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.lazar.ponesi.R
 import com.lazar.ponesi.ui.components.AppTopBar
 import com.lazar.ponesi.ui.components.CategoryCard
@@ -25,14 +24,22 @@ import com.lazar.ponesi.ui.theme.Dimens
 import com.lazar.ponesi.viewmodel.CreateTravelViewModel
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun CreateTravelScreen(
     onBackClick: () -> Unit,
-    createTravelViewModel: CreateTravelViewModel = viewModel()
+    onSaveSuccess: () -> Unit,
+    createTravelViewModel: CreateTravelViewModel
 ) {
 
     val uiState by createTravelViewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState.isSaveComplete) {
+        if (uiState.isSaveComplete) {
+            onSaveSuccess()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -77,9 +84,19 @@ fun CreateTravelScreen(
             items(uiState.categories) { category ->
                 CategoryCard(
                     category = category,
+
                     onAddItemClick = {
-                        createTravelViewModel.showAddItemDialog(
-                            category.id
+                        createTravelViewModel.showAddItemDialog(category.id)
+                    },
+
+                    onRemoveCategoryClick = {
+                        createTravelViewModel.removeCategory(category.id)
+                    },
+
+                    onRemoveItemClick = { itemId ->
+                        createTravelViewModel.removeItem(
+                            categoryId = category.id,
+                            itemId = itemId
                         )
                     }
                 )
@@ -102,7 +119,7 @@ fun CreateTravelScreen(
                 PrimaryButton(
                     text = stringResource(R.string.action_save),
                     onClick = {
-                        println("Sačuvaj šablon: ${uiState.name}")
+                        createTravelViewModel.saveTravel()
                     }
                 )
             }

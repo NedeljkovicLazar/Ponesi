@@ -8,37 +8,25 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.lazar.ponesi.data.model.Travel
-import com.lazar.ponesi.data.model.TravelStatus
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.lazar.ponesi.R
 import com.lazar.ponesi.ui.components.AppTopBar
 import com.lazar.ponesi.ui.components.BottomActionButtons
 import com.lazar.ponesi.ui.components.TravelCard
 import com.lazar.ponesi.ui.theme.Dimens
-import androidx.compose.ui.res.stringResource
-import com.lazar.ponesi.R
+import com.lazar.ponesi.viewmodel.HomeViewModel
 
 @Composable
 fun HomeScreen(
     onDocumentsClick: () -> Unit,
-    onCreateTravelClick: () -> Unit
+    onCreateTravelClick: () -> Unit,
+    homeViewModel: HomeViewModel
 ) {
-    val travels = listOf(
-        Travel(
-            id = 1,
-            name = "Letovanje Grčka",
-            status = TravelStatus.INACTIVE
-        ),
-        Travel(
-            id = 2,
-            name = "Vikend Zlatibor",
-            status = TravelStatus.SCHEDULED
-        ),
-        Travel(
-            id = 3,
-            name = "Poslovni put",
-            status = TravelStatus.ACTIVE
-        )
+    val travels by homeViewModel.travels.collectAsStateWithLifecycle(
+        initialValue = emptyList()
     )
 
     Scaffold(

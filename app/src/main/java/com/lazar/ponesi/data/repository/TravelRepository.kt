@@ -1,0 +1,68 @@
+package com.lazar.ponesi.data.repository
+
+import androidx.room.withTransaction
+import com.lazar.ponesi.data.database.AppDatabase
+import com.lazar.ponesi.data.database.entity.CategoryEntity
+import com.lazar.ponesi.data.database.entity.PackingItemEntity
+import com.lazar.ponesi.data.database.entity.TravelEntity
+import com.lazar.ponesi.data.mapper.toTravel
+import com.lazar.ponesi.data.model.Category
+import com.lazar.ponesi.data.model.Travel
+import com.lazar.ponesi.data.model.TravelStatus
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+
+class TravelRepository(
+    private val database: AppDatabase
+) {
+
+    private val travelDao = database.travelDao()
+
+    fun getAllTravels(): Flow<List<Travel>> {
+        return travelDao
+            .getAllTravelsWithCategories()
+            .map { travels ->
+                travels.map { travelWithCategories ->
+                    travelWithCategories.toTravel()
+                }
+            }
+    }
+
+    suspend fun saveTravel(
+        name: String,
+        categories: List<Category>
+    ) {
+        database.withTransaction {
+
+            val travelId = travelDao.insertTravel(
+                TravelEntity(
+                    name = name,
+                    status = TravelStatus.INACTIVE
+                )
+            ).toInt()
+
+            categories.forEachIndexed { categoryPosition, category ->
+
+                val categoryId = travelDao.insertCategory(
+                    CategoryEntity(
+                        travelId = travelId,
+                        name = category.name,
+                        position = categoryPosition
+                    )
+                ).toInt()
+
+                category.items.forEachIndexed { itemPosition, item ->
+
+                    travelDao.insertPackingItem(
+                        PackingItemEntity(
+                            categoryId = categoryId,
+                            name = item.name,
+                            isChecked = item.isChecked,
+                            position = itemPosition
+                        )
+                    )
+                }
+            }
+        }
+    }
+}

@@ -17,6 +17,8 @@
     <string name="action_add_category">+ Dodaj kategoriju</string>
     <string name="action_add">Dodaj</string>
     <string name="action_cancel">Otkaži</string>
+    <string name="action_remove_category">Ukloni kategoriju</string>
+    <string name="action_remove_item">Ukloni stavku</string>
 
     <!-- Home -->
     <string name="button_documents">Dokumenta</string>
@@ -34,6 +36,7 @@
     <string name="title_add_category">Dodaj kategoriju</string>
     <string name="label_category_name">Naziv kategorije</string>
     <string name="label_item_name">Naziv stavke</string>
+
 
     <!-- Documents -->
     <string name="documents_placeholder">Ovde će biti putna dokumenta</string>

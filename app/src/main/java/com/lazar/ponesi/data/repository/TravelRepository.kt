@@ -114,4 +114,14 @@ class TravelRepository(
             }
         }
     }
+
+    suspend fun deleteTravel(travelId: Int) {
+
+        val existingTravel = travelDao
+            .getTravelWithCategories(travelId)
+            ?.travel
+            ?: return
+
+        travelDao.deleteTravel(existingTravel)
+    }
 }

@@ -19,12 +19,16 @@
     <string name="action_add_category">+ Dodaj kategoriju</string>
     <string name="action_add">Dodaj</string>
     <string name="action_cancel">Otkaži</string>
+    <string name="action_delete">Obriši</string>
+    <string name="action_delete_template">Obriši šablon</string>
     <string name="action_remove_category">Ukloni kategoriju</string>
     <string name="action_remove_item">Ukloni stavku</string>
 
     <!-- Home -->
     <string name="button_documents">Dokumenta</string>
     <string name="button_new_template">Novi šablon</string>
+    <string name="title_delete_template">Obriši šablon?</string>
+    <string name="message_delete_template">Da li sigurno želiš da obrišeš šablon „%1$s“? Ova radnja se ne može poništiti.</string>
 
     <!-- Travel statuses -->
     <string name="status_inactive">Neaktivno</string>

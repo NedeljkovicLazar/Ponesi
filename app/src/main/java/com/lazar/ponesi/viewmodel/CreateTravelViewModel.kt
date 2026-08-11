@@ -1,74 +1,59 @@
 package com.lazar.ponesi.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.lazar.ponesi.data.model.Category
 import com.lazar.ponesi.data.model.PackingItem
+import com.lazar.ponesi.data.repository.TravelRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import androidx.lifecycle.viewModelScope
-import com.lazar.ponesi.data.repository.TravelRepository
 import kotlinx.coroutines.launch
 
 class CreateTravelViewModel(
-    private val travelRepository: TravelRepository
+    private val travelRepository: TravelRepository,
+    private val travelId: Int? = null
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
         CreateTravelUiState(
-            categories = listOf(
-                Category(
-                    id = 1,
-                    name = "Kofer",
-                    items = listOf(
-                        PackingItem(
-                            id = 1,
-                            name = "Majice"
-                        ),
-                        PackingItem(
-                            id = 2,
-                            name = "Pantalone"
-                        ),
-                        PackingItem(
-                            id = 3,
-                            name = "Donji veš"
-                        )
-                    )
-                ),
-                Category(
-                    id = 2,
-                    name = "Ranac",
-                    items = listOf(
-                        PackingItem(
-                            id = 4,
-                            name = "Punjač"
-                        ),
-                        PackingItem(
-                            id = 5,
-                            name = "Slušalice"
-                        )
-                    )
-                ),
-                Category(
-                    id = 3,
-                    name = "Neseser",
-                    items = listOf(
-                        PackingItem(
-                            id = 6,
-                            name = "Četkica za zube"
-                        ),
-                        PackingItem(
-                            id = 7,
-                            name = "Pasta za zube"
-                        )
-                    )
-                )
-            )
+            categories = if (travelId == null) {
+                defaultCategories()
+            } else {
+                emptyList()
+            },
+            isEditMode = travelId != null,
+            isLoading = travelId != null
         )
     )
 
     val uiState: StateFlow<CreateTravelUiState> =
         _uiState.asStateFlow()
+
+    init {
+        if (travelId != null) {
+            loadTravel(travelId)
+        }
+    }
+
+    private fun loadTravel(travelId: Int) {
+        viewModelScope.launch {
+
+            val travel = travelRepository.getTravel(travelId)
+
+            _uiState.value = if (travel != null) {
+                _uiState.value.copy(
+                    name = travel.name,
+                    categories = travel.categories,
+                    isLoading = false
+                )
+            } else {
+                _uiState.value.copy(
+                    isLoading = false
+                )
+            }
+        }
+    }
 
     fun onNameChange(newName: String) {
         _uiState.value = _uiState.value.copy(
@@ -118,6 +103,7 @@ class CreateTravelViewModel(
             newCategoryName = ""
         )
     }
+
     fun showAddItemDialog(categoryId: Int) {
         _uiState.value = _uiState.value.copy(
             selectedCategoryId = categoryId,
@@ -201,10 +187,18 @@ class CreateTravelViewModel(
 
             try {
 
-                travelRepository.saveTravel(
-                    name = travelName,
-                    categories = currentState.categories
-                )
+                if (travelId == null) {
+                    travelRepository.saveTravel(
+                        name = travelName,
+                        categories = currentState.categories
+                    )
+                } else {
+                    travelRepository.updateTravel(
+                        travelId = travelId,
+                        name = travelName,
+                        categories = currentState.categories
+                    )
+                }
 
                 _uiState.value = _uiState.value.copy(
                     isSaving = false,
@@ -250,5 +244,192 @@ class CreateTravelViewModel(
         _uiState.value = _uiState.value.copy(
             categories = updatedCategories
         )
+    }
+    fun showEditCategoryDialog(categoryId: Int) {
+
+        val category = _uiState.value.categories.find { category ->
+            category.id == categoryId
+        } ?: return
+
+        _uiState.value = _uiState.value.copy(
+            editingCategoryId = categoryId,
+            editedCategoryName = category.name
+        )
+    }
+
+    fun hideEditCategoryDialog() {
+        _uiState.value = _uiState.value.copy(
+            editingCategoryId = null,
+            editedCategoryName = ""
+        )
+    }
+
+    fun onEditedCategoryNameChange(newName: String) {
+        _uiState.value = _uiState.value.copy(
+            editedCategoryName = newName
+        )
+    }
+
+    fun renameCategory() {
+
+        val currentState = _uiState.value
+
+        val categoryId = currentState.editingCategoryId
+            ?: return
+
+        val categoryName = currentState.editedCategoryName.trim()
+
+        if (categoryName.isBlank()) {
+            return
+        }
+
+        val updatedCategories = currentState.categories.map { category ->
+
+            if (category.id == categoryId) {
+                category.copy(
+                    name = categoryName
+                )
+            } else {
+                category
+            }
+        }
+
+        _uiState.value = currentState.copy(
+            categories = updatedCategories,
+            editingCategoryId = null,
+            editedCategoryName = ""
+        )
+    }
+
+    fun showEditItemDialog(
+        categoryId: Int,
+        itemId: Int
+    ) {
+
+        val category = _uiState.value.categories.find { category ->
+            category.id == categoryId
+        } ?: return
+
+        val item = category.items.find { item ->
+            item.id == itemId
+        } ?: return
+
+        _uiState.value = _uiState.value.copy(
+            editingItemCategoryId = categoryId,
+            editingItemId = itemId,
+            editedItemName = item.name
+        )
+    }
+
+    fun hideEditItemDialog() {
+        _uiState.value = _uiState.value.copy(
+            editingItemCategoryId = null,
+            editingItemId = null,
+            editedItemName = ""
+        )
+    }
+
+    fun onEditedItemNameChange(newName: String) {
+        _uiState.value = _uiState.value.copy(
+            editedItemName = newName
+        )
+    }
+
+    fun renameItem() {
+
+        val currentState = _uiState.value
+
+        val categoryId = currentState.editingItemCategoryId
+            ?: return
+
+        val itemId = currentState.editingItemId
+            ?: return
+
+        val itemName = currentState.editedItemName.trim()
+
+        if (itemName.isBlank()) {
+            return
+        }
+
+        val updatedCategories = currentState.categories.map { category ->
+
+            if (category.id == categoryId) {
+                category.copy(
+                    items = category.items.map { item ->
+
+                        if (item.id == itemId) {
+                            item.copy(
+                                name = itemName
+                            )
+                        } else {
+                            item
+                        }
+                    }
+                )
+            } else {
+                category
+            }
+        }
+
+        _uiState.value = currentState.copy(
+            categories = updatedCategories,
+            editingItemCategoryId = null,
+            editingItemId = null,
+            editedItemName = ""
+        )
+    }
+
+    private companion object {
+
+        fun defaultCategories(): List<Category> {
+            return listOf(
+                Category(
+                    id = 1,
+                    name = "Kofer",
+                    items = listOf(
+                        PackingItem(
+                            id = 1,
+                            name = "Majice"
+                        ),
+                        PackingItem(
+                            id = 2,
+                            name = "Pantalone"
+                        ),
+                        PackingItem(
+                            id = 3,
+                            name = "Donji veš"
+                        )
+                    )
+                ),
+                Category(
+                    id = 2,
+                    name = "Ranac",
+                    items = listOf(
+                        PackingItem(
+                            id = 4,
+                            name = "Punjač"
+                        ),
+                        PackingItem(
+                            id = 5,
+                            name = "Slušalice"
+                        )
+                    )
+                ),
+                Category(
+                    id = 3,
+                    name = "Neseser",
+                    items = listOf(
+                        PackingItem(
+                            id = 6,
+                            name = "Četkica za zube"
+                        ),
+                        PackingItem(
+                            id = 7,
+                            name = "Pasta za zube"
+                        )
+                    )
+                )
+            )
+        }
     }
 }

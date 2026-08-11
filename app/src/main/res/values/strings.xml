@@ -6,12 +6,14 @@
     <string name="title_travels">Putovanja</string>
     <string name="title_documents">Dokumenta</string>
     <string name="title_new_template">Novi šablon</string>
+    <string name="title_edit_template">Izmeni šablon</string>
 
     <!-- General actions -->
     <string name="action_back">Nazad</string>
     <string name="action_filter">Filter</string>
     <string name="action_sort">Sortiraj</string>
     <string name="action_edit">Izmeni</string>
+    <string name="action_rename">Preimenuj</string>
     <string name="action_save">Sačuvaj</string>
     <string name="action_add_item">Dodaj stavku</string>
     <string name="action_add_category">+ Dodaj kategoriju</string>
@@ -30,16 +32,16 @@
     <string name="status_scheduled">Zakazano</string>
     <string name="status_days_until">Za %1$d dana</string>
 
-    <!-- Create template -->
+    <!-- Create and edit template -->
     <string name="label_template_name">Naziv šablona</string>
     <string name="label_categories">Kategorije</string>
     <string name="title_add_category">Dodaj kategoriju</string>
+    <string name="title_edit_category">Izmeni kategoriju</string>
+    <string name="title_edit_item">Izmeni stavku</string>
     <string name="label_category_name">Naziv kategorije</string>
     <string name="label_item_name">Naziv stavke</string>
 
-
     <!-- Documents -->
     <string name="documents_placeholder">Ovde će biti putna dokumenta</string>
-
 
 </resources>

@@ -28,6 +28,12 @@ class TravelRepository(
             }
     }
 
+    suspend fun getTravel(travelId: Int): Travel? {
+        return travelDao
+            .getTravelWithCategories(travelId)
+            ?.toTravel()
+    }
+
     suspend fun saveTravel(
         name: String,
         categories: List<Category>
@@ -40,6 +46,49 @@ class TravelRepository(
                     status = TravelStatus.INACTIVE
                 )
             ).toInt()
+
+            categories.forEachIndexed { categoryPosition, category ->
+
+                val categoryId = travelDao.insertCategory(
+                    CategoryEntity(
+                        travelId = travelId,
+                        name = category.name,
+                        position = categoryPosition
+                    )
+                ).toInt()
+
+                category.items.forEachIndexed { itemPosition, item ->
+
+                    travelDao.insertPackingItem(
+                        PackingItemEntity(
+                            categoryId = categoryId,
+                            name = item.name,
+                            isChecked = item.isChecked,
+                            position = itemPosition
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    suspend fun updateTravel(
+        travelId: Int,
+        name: String,
+        categories: List<Category>
+    ) {
+        database.withTransaction {
+
+            val existingTravel = travelDao.getTravelWithCategories(travelId)
+                ?: return@withTransaction
+
+            travelDao.updateTravel(
+                existingTravel.travel.copy(
+                    name = name
+                )
+            )
+
+            travelDao.deleteCategoriesForTravel(travelId)
 
             categories.forEachIndexed { categoryPosition, category ->
 

@@ -23,6 +23,7 @@ import com.lazar.ponesi.viewmodel.HomeViewModel
 fun HomeScreen(
     onDocumentsClick: () -> Unit,
     onCreateTravelClick: () -> Unit,
+    onEditTravelClick: (Int) -> Unit,
     homeViewModel: HomeViewModel
 ) {
     val travels by homeViewModel.travels.collectAsStateWithLifecycle(
@@ -60,7 +61,7 @@ fun HomeScreen(
                         println("Kliknuto ${travel.name}")
                     },
                     onEditClick = {
-                        println("Edit ${travel.name}")
+                        onEditTravelClick(travel.id)
                     }
                 )
             }

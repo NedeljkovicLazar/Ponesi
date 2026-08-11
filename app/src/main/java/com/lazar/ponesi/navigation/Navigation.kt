@@ -3,9 +3,11 @@ package com.lazar.ponesi.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.lazar.ponesi.PonesiApplication
 import com.lazar.ponesi.ui.screens.CreateTravelScreen
 import com.lazar.ponesi.ui.screens.DocumentsScreen
@@ -14,9 +16,19 @@ import com.lazar.ponesi.viewmodel.CreateTravelViewModel
 import com.lazar.ponesi.viewmodel.HomeViewModel
 
 sealed class Screen(val route: String) {
+
     object Home : Screen("home")
+
     object Documents : Screen("documents")
+
     object CreateTravel : Screen("create_travel")
+
+    object EditTravel : Screen("edit_travel/{travelId}") {
+
+        fun createRoute(travelId: Int): String {
+            return "edit_travel/$travelId"
+        }
+    }
 }
 
 @Composable
@@ -47,11 +59,17 @@ fun AppNavigation() {
                 onCreateTravelClick = {
                     navController.navigate(Screen.CreateTravel.route)
                 },
+                onEditTravelClick = { travelId ->
+                    navController.navigate(
+                        Screen.EditTravel.createRoute(travelId)
+                    )
+                },
                 homeViewModel = homeViewModel
             )
         }
 
         composable(Screen.Documents.route) {
+
             DocumentsScreen(
                 onBackClick = {
                     navController.popBackStack()
@@ -75,6 +93,37 @@ fun AppNavigation() {
                     navController.popBackStack()
                 },
                 createTravelViewModel = createTravelViewModel
+            )
+        }
+
+        composable(
+            route = Screen.EditTravel.route,
+            arguments = listOf(
+                navArgument("travelId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+
+            val travelId =
+                backStackEntry.arguments?.getInt("travelId")
+                    ?: return@composable
+
+            val editTravelViewModel: CreateTravelViewModel = viewModel {
+                CreateTravelViewModel(
+                    travelRepository = application.travelRepository,
+                    travelId = travelId
+                )
+            }
+
+            CreateTravelScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onSaveSuccess = {
+                    navController.popBackStack()
+                },
+                createTravelViewModel = editTravelViewModel
             )
         }
     }

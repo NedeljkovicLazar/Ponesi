@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.lazar.ponesi.data.database.entity.CategoryEntity
 import com.lazar.ponesi.data.database.entity.PackingItemEntity
 import com.lazar.ponesi.data.database.entity.TravelEntity
@@ -28,6 +29,16 @@ interface TravelDao {
     suspend fun insertPackingItem(
         item: PackingItemEntity
     ): Long
+
+    @Update
+    suspend fun updateTravel(
+        travel: TravelEntity
+    )
+
+    @Query("DELETE FROM categories WHERE travelId = :travelId")
+    suspend fun deleteCategoriesForTravel(
+        travelId: Int
+    )
 
     @Transaction
     @Query("SELECT * FROM travels ORDER BY id DESC")

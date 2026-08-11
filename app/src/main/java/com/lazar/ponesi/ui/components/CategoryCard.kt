@@ -19,40 +19,44 @@ import androidx.compose.ui.res.stringResource
 import com.lazar.ponesi.R
 import com.lazar.ponesi.data.model.Category
 import com.lazar.ponesi.ui.theme.Dimens
+
 @Composable
 fun CategoryCard(
     category: Category,
     onAddItemClick: () -> Unit,
+    onEditCategoryClick: () -> Unit,
     onRemoveCategoryClick: () -> Unit,
+    onEditItemClick: (Int) -> Unit,
     onRemoveItemClick: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-
         shape = RoundedCornerShape(Dimens.CardCornerRadius),
-
         border = BorderStroke(
             Dimens.ThinBorderWidth,
             MaterialTheme.colorScheme.outline
         ),
-
         colors = CardDefaults.cardColors()
     ) {
-
         Column(
             modifier = Modifier.padding(Dimens.SpacingLarge),
             verticalArrangement = Arrangement.spacedBy(Dimens.SpacingMedium)
         ) {
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 Text(
                     text = category.name,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.weight(1f)
+                )
+
+                EditIconButton(
+                    onClick = onEditCategoryClick,
+                    contentDescription = stringResource(
+                        R.string.title_edit_category
+                    )
                 )
 
                 RemoveIconButton(
@@ -64,19 +68,27 @@ fun CategoryCard(
             }
 
             Column(
-                verticalArrangement = Arrangement.spacedBy(Dimens.SpacingSmall)
+                verticalArrangement = Arrangement.spacedBy(
+                    Dimens.SpacingSmall
+                )
             ) {
-
                 category.items.forEach { item ->
-
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
                         Text(
                             text = "• ${item.name}",
                             modifier = Modifier.weight(1f)
+                        )
+
+                        EditIconButton(
+                            onClick = {
+                                onEditItemClick(item.id)
+                            },
+                            contentDescription = stringResource(
+                                R.string.title_edit_item
+                            )
                         )
 
                         RemoveIconButton(

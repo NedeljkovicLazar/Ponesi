@@ -1,6 +1,7 @@
 package com.lazar.ponesi.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -13,21 +14,21 @@ import com.lazar.ponesi.ui.theme.Dimens
 fun PrimaryButton(
     text: String,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
 
     Button(
         modifier = modifier.fillMaxWidth(),
         onClick = onClick,
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(Dimens.ButtonCornerRadius),
+        enabled = enabled,
+        shape = RoundedCornerShape(Dimens.ButtonCornerRadius),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary
         )
     ) {
-
         Text(
             text = text
         )
-
     }
 }

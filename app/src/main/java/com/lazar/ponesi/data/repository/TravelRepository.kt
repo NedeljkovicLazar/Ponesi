@@ -11,6 +11,7 @@ import com.lazar.ponesi.data.model.Travel
 import com.lazar.ponesi.data.model.TravelStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 
 class TravelRepository(
     private val database: AppDatabase
@@ -143,5 +144,56 @@ class TravelRepository(
             categoryId = categoryId,
             isChecked = isChecked
         )
+    }
+
+    suspend fun scheduleTravel(
+        travelId: Int,
+        date: LocalDate
+    ) {
+        travelDao.updateTravelStatusAndDate(
+            travelId = travelId,
+            status = TravelStatus.SCHEDULED,
+            date = date
+        )
+    }
+
+    suspend fun cancelScheduledTravel(
+        travelId: Int
+    ) {
+        travelDao.updateTravelStatusAndDate(
+            travelId = travelId,
+            status = TravelStatus.INACTIVE,
+            date = null
+        )
+    }
+
+    suspend fun startTravel(
+        travelId: Int
+    ) {
+        database.withTransaction {
+
+            travelDao.uncheckAllItemsForTravel(travelId)
+
+            travelDao.updateTravelStatusAndDate(
+                travelId = travelId,
+                status = TravelStatus.ACTIVE,
+                date = null
+            )
+        }
+    }
+
+    suspend fun finishTravel(
+        travelId: Int
+    ) {
+        database.withTransaction {
+
+            travelDao.uncheckAllItemsForTravel(travelId)
+
+            travelDao.updateTravelStatusAndDate(
+                travelId = travelId,
+                status = TravelStatus.INACTIVE,
+                date = null
+            )
+        }
     }
 }

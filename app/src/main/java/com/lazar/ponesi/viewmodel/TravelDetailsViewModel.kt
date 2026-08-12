@@ -7,6 +7,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.lazar.ponesi.data.model.TravelStatus
+import kotlinx.coroutines.flow.update
+import java.time.LocalDate
 
 class TravelDetailsViewModel(
     private val travelRepository: TravelRepository,
@@ -110,6 +113,94 @@ class TravelDetailsViewModel(
             travelRepository.updateCategoryItemsChecked(
                 categoryId = categoryId,
                 isChecked = isChecked
+            )
+        }
+    }
+
+    fun scheduleTravel(date: LocalDate) {
+        viewModelScope.launch {
+
+            travelRepository.scheduleTravel(
+                travelId = travelId,
+                date = date
+            )
+
+            updateTravelState(
+                status = TravelStatus.SCHEDULED,
+                date = date,
+                uncheckItems = false
+            )
+        }
+    }
+
+    fun cancelScheduledTravel() {
+        viewModelScope.launch {
+
+            travelRepository.cancelScheduledTravel(travelId)
+
+            updateTravelState(
+                status = TravelStatus.INACTIVE,
+                date = null,
+                uncheckItems = false
+            )
+        }
+    }
+
+    fun startTravel() {
+        viewModelScope.launch {
+
+            travelRepository.startTravel(travelId)
+
+            updateTravelState(
+                status = TravelStatus.ACTIVE,
+                date = null,
+                uncheckItems = true
+            )
+        }
+    }
+
+    fun finishTravel() {
+        viewModelScope.launch {
+
+            travelRepository.finishTravel(travelId)
+
+            updateTravelState(
+                status = TravelStatus.INACTIVE,
+                date = null,
+                uncheckItems = true
+            )
+        }
+    }
+
+    private fun updateTravelState(
+        status: TravelStatus,
+        date: LocalDate?,
+        uncheckItems: Boolean
+    ) {
+        _uiState.update { currentState ->
+
+            val currentTravel = currentState.travel
+                ?: return@update currentState
+
+            val updatedCategories =
+                if (uncheckItems) {
+                    currentTravel.categories.map { category ->
+                        category.copy(
+                            items = category.items.map { item ->
+                                item.copy(isChecked = false)
+                            }
+                        )
+                    }
+                } else {
+                    currentTravel.categories
+                }
+
+            currentState.copy(
+                travel = currentTravel.copy(
+                    status = status,
+                    date = date,
+                    categories = updatedCategories
+                )
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.lazar.ponesi.ui.screens
 
+import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -7,20 +8,31 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lazar.ponesi.R
+import com.lazar.ponesi.data.model.TravelStatus
 import com.lazar.ponesi.ui.components.AppTopBar
 import com.lazar.ponesi.ui.components.ChecklistCategoryCard
+import com.lazar.ponesi.ui.components.TravelLifecycleCard
 import com.lazar.ponesi.ui.theme.Dimens
 import com.lazar.ponesi.viewmodel.TravelDetailsViewModel
+import java.time.LocalDate
+import java.time.ZoneId
 
 @Composable
 fun TravelDetailsScreen(
@@ -31,10 +43,50 @@ fun TravelDetailsScreen(
         .uiState
         .collectAsStateWithLifecycle()
 
+    val context = LocalContext.current
+
+    var showStartDialog by remember {
+        mutableStateOf(false)
+    }
+
+    var showFinishDialog by remember {
+        mutableStateOf(false)
+    }
+
+    var automaticStartDialogShown by remember {
+        mutableStateOf(false)
+    }
+
+    val currentTravel = uiState.travel
+
+    LaunchedEffect(
+        currentTravel?.status,
+        currentTravel?.date
+    ) {
+        val scheduledDate = currentTravel?.date
+
+        val scheduledDateHasArrived =
+            currentTravel?.status == TravelStatus.SCHEDULED &&
+                    scheduledDate != null &&
+                    !scheduledDate.isAfter(LocalDate.now())
+
+        if (
+            scheduledDateHasArrived &&
+            !automaticStartDialogShown
+        ) {
+            showStartDialog = true
+            automaticStartDialogShown = true
+        }
+
+        if (!scheduledDateHasArrived) {
+            automaticStartDialogShown = false
+        }
+    }
+
     Scaffold(
         topBar = {
             AppTopBar(
-                title = uiState.travel?.name
+                title = currentTravel?.name
                     ?: stringResource(
                         R.string.title_travel_details
                     ),
@@ -56,7 +108,7 @@ fun TravelDetailsScreen(
                 }
             }
 
-            uiState.travel == null -> {
+            currentTravel == null -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -72,8 +124,7 @@ fun TravelDetailsScreen(
             }
 
             else -> {
-                val travel = uiState.travel
-                    ?: return@Scaffold
+                val travel = currentTravel
 
                 LazyColumn(
                     modifier = Modifier
@@ -86,6 +137,71 @@ fun TravelDetailsScreen(
                         Dimens.SpacingMedium
                     )
                 ) {
+                    item {
+                        TravelLifecycleCard(
+                            travel = travel,
+
+                            onScheduleClick = {
+                                val today = LocalDate.now()
+
+                                val initialDate = travel.date
+                                    ?.takeIf { date ->
+                                        !date.isBefore(today)
+                                    }
+                                    ?: today
+
+                                val datePickerDialog =
+                                    DatePickerDialog(
+                                        context,
+                                        {
+                                                _,
+                                                year,
+                                                month,
+                                                dayOfMonth ->
+
+                                            val selectedDate =
+                                                LocalDate.of(
+                                                    year,
+                                                    month + 1,
+                                                    dayOfMonth
+                                                )
+
+                                            travelDetailsViewModel
+                                                .scheduleTravel(
+                                                    selectedDate
+                                                )
+                                        },
+                                        initialDate.year,
+                                        initialDate.monthValue - 1,
+                                        initialDate.dayOfMonth
+                                    )
+
+                                datePickerDialog.datePicker.minDate =
+                                    today
+                                        .atStartOfDay(
+                                            ZoneId.systemDefault()
+                                        )
+                                        .toInstant()
+                                        .toEpochMilli()
+
+                                datePickerDialog.show()
+                            },
+
+                            onCancelScheduleClick = {
+                                travelDetailsViewModel
+                                    .cancelScheduledTravel()
+                            },
+
+                            onStartClick = {
+                                showStartDialog = true
+                            },
+
+                            onFinishClick = {
+                                showFinishDialog = true
+                            }
+                        )
+                    }
+
                     items(
                         items = travel.categories,
                         key = { category ->
@@ -121,5 +237,112 @@ fun TravelDetailsScreen(
                 }
             }
         }
+    }
+
+    if (showStartDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showStartDialog = false
+            },
+
+            title = {
+                Text(
+                    text = stringResource(
+                        R.string.title_start_travel,
+                        currentTravel?.name.orEmpty()
+                    )
+                )
+            },
+
+            text = {
+                Text(
+                    text = stringResource(
+                        R.string.message_start_travel
+                    )
+                )
+            },
+
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        travelDetailsViewModel.startTravel()
+                        showStartDialog = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.action_start_travel
+                        )
+                    )
+                }
+            },
+
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showStartDialog = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.action_cancel
+                        )
+                    )
+                }
+            }
+        )
+    }
+
+    if (showFinishDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showFinishDialog = false
+            },
+
+            title = {
+                Text(
+                    text = stringResource(
+                        R.string.title_finish_travel
+                    )
+                )
+            },
+
+            text = {
+                Text(
+                    text = stringResource(
+                        R.string.message_finish_travel
+                    )
+                )
+            },
+
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        travelDetailsViewModel.finishTravel()
+                        showFinishDialog = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.action_finish_travel
+                        )
+                    )
+                }
+            },
+
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showFinishDialog = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(
+                            R.string.action_cancel
+                        )
+                    )
+                }
+            }
+        )
     }
 }

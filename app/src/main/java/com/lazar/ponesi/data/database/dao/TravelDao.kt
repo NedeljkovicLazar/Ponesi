@@ -11,7 +11,8 @@ import com.lazar.ponesi.data.database.entity.PackingItemEntity
 import com.lazar.ponesi.data.database.entity.TravelEntity
 import com.lazar.ponesi.data.database.relation.TravelWithCategories
 import kotlinx.coroutines.flow.Flow
-
+import com.lazar.ponesi.data.model.TravelStatus
+import java.time.LocalDate
 @Dao
 interface TravelDao {
 
@@ -57,6 +58,35 @@ interface TravelDao {
     suspend fun updateCategoryItemsChecked(
         categoryId: Int,
         isChecked: Boolean
+    )
+
+    @Query(
+        """
+    UPDATE travels
+    SET status = :status,
+        date = :date
+    WHERE id = :travelId
+    """
+    )
+    suspend fun updateTravelStatusAndDate(
+        travelId: Int,
+        status: TravelStatus,
+        date: LocalDate?
+    )
+
+    @Query(
+        """
+    UPDATE packing_items
+    SET isChecked = 0
+    WHERE categoryId IN (
+        SELECT id
+        FROM categories
+        WHERE travelId = :travelId
+    )
+    """
+    )
+    suspend fun uncheckAllItemsForTravel(
+        travelId: Int
     )
 
     @Query("DELETE FROM categories WHERE travelId = :travelId")

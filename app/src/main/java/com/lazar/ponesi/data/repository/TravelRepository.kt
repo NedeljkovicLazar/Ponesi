@@ -124,4 +124,24 @@ class TravelRepository(
 
         travelDao.deleteTravel(existingTravel)
     }
+
+    suspend fun updatePackingItemChecked(
+        itemId: Int,
+        isChecked: Boolean
+    ) {
+        travelDao.updatePackingItemChecked(
+            itemId = itemId,
+            isChecked = isChecked
+        )
+    }
+
+    suspend fun updateCategoryItemsChecked(
+        categoryId: Int,
+        isChecked: Boolean
+    ) {
+        travelDao.updateCategoryItemsChecked(
+            categoryId = categoryId,
+            isChecked = isChecked
+        )
+    }
 }

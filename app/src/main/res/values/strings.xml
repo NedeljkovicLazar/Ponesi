@@ -7,6 +7,7 @@
     <string name="title_documents">Dokumenta</string>
     <string name="title_new_template">Novi šablon</string>
     <string name="title_edit_template">Izmeni šablon</string>
+    <string name="title_travel_details">Lista za pakovanje</string>
 
     <!-- General actions -->
     <string name="action_back">Nazad</string>
@@ -23,6 +24,8 @@
     <string name="action_delete_template">Obriši šablon</string>
     <string name="action_remove_category">Ukloni kategoriju</string>
     <string name="action_remove_item">Ukloni stavku</string>
+    <string name="action_check_all">Označi sve</string>
+    <string name="action_uncheck_all">Poništi sve</string>
 
     <!-- Home -->
     <string name="button_documents">Dokumenta</string>
@@ -47,5 +50,9 @@
 
     <!-- Documents -->
     <string name="documents_placeholder">Ovde će biti putna dokumenta</string>
+
+    <!-- Travel details -->
+    <string name="message_category_empty">Ova kategorija nema stavke.</string>
+    <string name="message_travel_not_found">Putovanje nije pronađeno.</string>
 
 </resources>

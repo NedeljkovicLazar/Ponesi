@@ -35,6 +35,30 @@ interface TravelDao {
         travel: TravelEntity
     )
 
+    @Query(
+        """
+        UPDATE packing_items
+        SET isChecked = :isChecked
+        WHERE id = :itemId
+        """
+    )
+    suspend fun updatePackingItemChecked(
+        itemId: Int,
+        isChecked: Boolean
+    )
+
+    @Query(
+        """
+        UPDATE packing_items
+        SET isChecked = :isChecked
+        WHERE categoryId = :categoryId
+        """
+    )
+    suspend fun updateCategoryItemsChecked(
+        categoryId: Int,
+        isChecked: Boolean
+    )
+
     @Query("DELETE FROM categories WHERE travelId = :travelId")
     suspend fun deleteCategoriesForTravel(
         travelId: Int

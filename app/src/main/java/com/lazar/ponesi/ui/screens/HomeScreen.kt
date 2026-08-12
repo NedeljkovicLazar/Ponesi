@@ -30,6 +30,7 @@ import com.lazar.ponesi.viewmodel.HomeViewModel
 fun HomeScreen(
     onDocumentsClick: () -> Unit,
     onCreateTravelClick: () -> Unit,
+    onTravelClick: (Int) -> Unit,
     onEditTravelClick: (Int) -> Unit,
     homeViewModel: HomeViewModel
 ) {
@@ -72,7 +73,7 @@ fun HomeScreen(
                     travel = travel,
 
                     onClick = {
-                        println("Kliknuto ${travel.name}")
+                        onTravelClick(travel.id)
                     },
 
                     onEditClick = {

@@ -12,8 +12,10 @@ import com.lazar.ponesi.PonesiApplication
 import com.lazar.ponesi.ui.screens.CreateTravelScreen
 import com.lazar.ponesi.ui.screens.DocumentsScreen
 import com.lazar.ponesi.ui.screens.HomeScreen
+import com.lazar.ponesi.ui.screens.TravelDetailsScreen
 import com.lazar.ponesi.viewmodel.CreateTravelViewModel
 import com.lazar.ponesi.viewmodel.HomeViewModel
+import com.lazar.ponesi.viewmodel.TravelDetailsViewModel
 
 sealed class Screen(val route: String) {
 
@@ -22,6 +24,13 @@ sealed class Screen(val route: String) {
     object Documents : Screen("documents")
 
     object CreateTravel : Screen("create_travel")
+
+    object TravelDetails : Screen("travel_details/{travelId}") {
+
+        fun createRoute(travelId: Int): String {
+            return "travel_details/$travelId"
+        }
+    }
 
     object EditTravel : Screen("edit_travel/{travelId}") {
 
@@ -59,6 +68,11 @@ fun AppNavigation() {
                 onCreateTravelClick = {
                     navController.navigate(Screen.CreateTravel.route)
                 },
+                onTravelClick = { travelId ->
+                    navController.navigate(
+                        Screen.TravelDetails.createRoute(travelId)
+                    )
+                },
                 onEditTravelClick = { travelId ->
                     navController.navigate(
                         Screen.EditTravel.createRoute(travelId)
@@ -93,6 +107,36 @@ fun AppNavigation() {
                     navController.popBackStack()
                 },
                 createTravelViewModel = createTravelViewModel
+            )
+        }
+
+        composable(
+            route = Screen.TravelDetails.route,
+            arguments = listOf(
+                navArgument("travelId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+
+            val travelId =
+                backStackEntry.arguments?.getInt("travelId")
+                    ?: return@composable
+
+            val travelDetailsViewModel: TravelDetailsViewModel =
+                viewModel {
+                    TravelDetailsViewModel(
+                        travelRepository =
+                            application.travelRepository,
+                        travelId = travelId
+                    )
+                }
+
+            TravelDetailsScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                travelDetailsViewModel = travelDetailsViewModel
             )
         }
 

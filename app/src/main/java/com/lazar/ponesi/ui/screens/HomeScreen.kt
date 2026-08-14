@@ -23,6 +23,8 @@ import com.lazar.ponesi.data.model.Travel
 import com.lazar.ponesi.ui.components.AppTopBar
 import com.lazar.ponesi.ui.components.BottomActionButtons
 import com.lazar.ponesi.ui.components.TravelCard
+import com.lazar.ponesi.ui.components.TravelFilterDialog
+import com.lazar.ponesi.ui.components.TravelSortDialog
 import com.lazar.ponesi.ui.theme.Dimens
 import com.lazar.ponesi.viewmodel.HomeViewModel
 
@@ -34,9 +36,25 @@ fun HomeScreen(
     onEditTravelClick: (Int) -> Unit,
     homeViewModel: HomeViewModel
 ) {
-    val travels by homeViewModel.travels.collectAsStateWithLifecycle(
-        initialValue = emptyList()
-    )
+    val travels by homeViewModel
+        .travels
+        .collectAsStateWithLifecycle()
+
+    val selectedFilter by homeViewModel
+        .selectedFilter
+        .collectAsStateWithLifecycle()
+
+    val selectedSort by homeViewModel
+        .selectedSort
+        .collectAsStateWithLifecycle()
+
+    var showFilterDialog by remember {
+        mutableStateOf(false)
+    }
+
+    var showSortDialog by remember {
+        mutableStateOf(false)
+    }
 
     var travelPendingDeletion by remember {
         mutableStateOf<Travel?>(null)
@@ -45,11 +63,20 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = stringResource(R.string.title_travels),
+                title = stringResource(
+                    R.string.title_travels
+                ),
                 showFilter = true,
-                showSort = true
+                showSort = true,
+                onFilterClick = {
+                    showFilterDialog = true
+                },
+                onSortClick = {
+                    showSortDialog = true
+                }
             )
         },
+
         bottomBar = {
             BottomActionButtons(
                 onDocumentsClick = onDocumentsClick,
@@ -62,30 +89,71 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(Dimens.SpacingLarge),
+            contentPadding = PaddingValues(
+                Dimens.SpacingLarge
+            ),
             verticalArrangement = Arrangement.spacedBy(
                 Dimens.SpacingMedium
             )
         ) {
-            items(travels) { travel ->
-
-                TravelCard(
-                    travel = travel,
-
-                    onClick = {
-                        onTravelClick(travel.id)
-                    },
-
-                    onEditClick = {
-                        onEditTravelClick(travel.id)
-                    },
-
-                    onDeleteClick = {
-                        travelPendingDeletion = travel
+            if (travels.isEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(
+                            R.string.message_no_travels_to_show
+                        )
+                    )
+                }
+            } else {
+                items(
+                    items = travels,
+                    key = { travel ->
+                        travel.id
                     }
-                )
+                ) { travel ->
+
+                    TravelCard(
+                        travel = travel,
+
+                        onClick = {
+                            onTravelClick(travel.id)
+                        },
+
+                        onEditClick = {
+                            onEditTravelClick(travel.id)
+                        },
+
+                        onDeleteClick = {
+                            travelPendingDeletion = travel
+                        }
+                    )
+                }
             }
         }
+    }
+
+    if (showFilterDialog) {
+        TravelFilterDialog(
+            selectedFilter = selectedFilter,
+            onFilterSelected = { filter ->
+                homeViewModel.selectFilter(filter)
+            },
+            onDismiss = {
+                showFilterDialog = false
+            }
+        )
+    }
+
+    if (showSortDialog) {
+        TravelSortDialog(
+            selectedSort = selectedSort,
+            onSortSelected = { sort ->
+                homeViewModel.selectSort(sort)
+            },
+            onDismiss = {
+                showSortDialog = false
+            }
+        )
     }
 
     travelPendingDeletion?.let { travel ->
@@ -115,7 +183,10 @@ fun HomeScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        homeViewModel.deleteTravel(travel.id)
+                        homeViewModel.deleteTravel(
+                            travel.id
+                        )
+
                         travelPendingDeletion = null
                     }
                 ) {

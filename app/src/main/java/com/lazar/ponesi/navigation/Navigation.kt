@@ -14,6 +14,7 @@ import com.lazar.ponesi.ui.screens.DocumentsScreen
 import com.lazar.ponesi.ui.screens.HomeScreen
 import com.lazar.ponesi.ui.screens.TravelDetailsScreen
 import com.lazar.ponesi.viewmodel.CreateTravelViewModel
+import com.lazar.ponesi.viewmodel.DocumentsViewModel
 import com.lazar.ponesi.viewmodel.HomeViewModel
 import com.lazar.ponesi.viewmodel.TravelDetailsViewModel
 
@@ -84,10 +85,19 @@ fun AppNavigation() {
 
         composable(Screen.Documents.route) {
 
+            val documentsViewModel: DocumentsViewModel =
+                viewModel {
+                    DocumentsViewModel(
+                        documentRepository =
+                            application.documentRepository
+                    )
+                }
+
             DocumentsScreen(
                 onBackClick = {
                     navController.popBackStack()
-                }
+                },
+                documentsViewModel = documentsViewModel
             )
         }
 

@@ -31,6 +31,9 @@
     <string name="action_cancel_schedule">Otkaži</string>
     <string name="action_start_travel">Pokreni sada</string>
     <string name="action_finish_travel">Završi putovanje</string>
+    <string name="action_add_document">+ Dodaj dokument</string>
+    <string name="action_open_document">Otvori</string>
+    <string name="action_delete_document">Obriši dokument</string>
 
     <!-- Home -->
     <string name="button_documents">Dokumenta</string>
@@ -50,7 +53,7 @@
     </plurals>
 
     <string name="status_travel_today">
-    Danas — spremno za pokretanje
+        Danas — spremno za pokretanje
     </string>
 
     <plurals name="travel_days_since">
@@ -71,7 +74,15 @@
     <string name="label_item_name">Naziv stavke</string>
 
     <!-- Documents -->
-    <string name="documents_placeholder">Ovde će biti putna dokumenta</string>
+    <string name="documents_description">Ovde možeš da sačuvaš pasoš, vizu, karte i druge PDF ili slikovne dokumente.</string>
+    <string name="documents_empty">Još nema sačuvanih dokumenata.</string>
+    <string name="title_add_document">Dodaj dokument</string>
+    <string name="label_document_title">Naziv dokumenta</string>
+    <string name="document_type_pdf">PDF</string>
+    <string name="document_type_image">Slika</string>
+    <string name="title_delete_document">Obriši dokument?</string>
+    <string name="message_delete_document">Da li sigurno želiš da obrišeš dokument „%1$s“ iz aplikacije?</string>
+    <string name="message_document_open_failed">Dokument nije moguće otvoriti. Moguće je da je fajl premešten ili obrisan.</string>
 
     <!-- Travel details -->
     <string name="message_category_empty">Ova kategorija nema stavke.</string>

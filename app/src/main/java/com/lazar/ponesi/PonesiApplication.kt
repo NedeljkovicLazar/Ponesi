@@ -2,6 +2,7 @@ package com.lazar.ponesi
 
 import android.app.Application
 import com.lazar.ponesi.data.database.AppDatabase
+import com.lazar.ponesi.data.repository.DocumentRepository
 import com.lazar.ponesi.data.repository.TravelRepository
 
 class PonesiApplication : Application() {
@@ -12,5 +13,9 @@ class PonesiApplication : Application() {
 
     val travelRepository by lazy {
         TravelRepository(database)
+    }
+
+    val documentRepository by lazy {
+        DocumentRepository(database)
     }
 }

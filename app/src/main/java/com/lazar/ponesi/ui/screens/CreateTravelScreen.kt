@@ -28,6 +28,7 @@ import com.lazar.ponesi.ui.components.CategoryCard
 import com.lazar.ponesi.ui.components.PrimaryButton
 import com.lazar.ponesi.ui.theme.Dimens
 import com.lazar.ponesi.viewmodel.CreateTravelViewModel
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun CreateTravelScreen(
@@ -102,6 +103,16 @@ fun CreateTravelScreen(
                     )
                 }
 
+                if (uiState.categories.isEmpty()) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.message_no_categories),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
                 items(uiState.categories) { category ->
                     CategoryCard(
                         category = category,
@@ -158,7 +169,10 @@ fun CreateTravelScreen(
                 item {
                     PrimaryButton(
                         text = stringResource(R.string.action_save),
-                        enabled = !uiState.isSaving,
+                        enabled =
+                            uiState.name.isNotBlank() &&
+                                    uiState.categories.isNotEmpty() &&
+                                    !uiState.isSaving,
                         onClick = {
                             createTravelViewModel.saveTravel()
                         }

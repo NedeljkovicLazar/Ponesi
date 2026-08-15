@@ -17,11 +17,6 @@ class CreateTravelViewModel(
 
     private val _uiState = MutableStateFlow(
         CreateTravelUiState(
-            categories = if (travelId == null) {
-                defaultCategories()
-            } else {
-                emptyList()
-            },
             isEditMode = travelId != null,
             isLoading = travelId != null
         )
@@ -377,59 +372,5 @@ class CreateTravelViewModel(
             editingItemId = null,
             editedItemName = ""
         )
-    }
-
-    private companion object {
-
-        fun defaultCategories(): List<Category> {
-            return listOf(
-                Category(
-                    id = 1,
-                    name = "Kofer",
-                    items = listOf(
-                        PackingItem(
-                            id = 1,
-                            name = "Majice"
-                        ),
-                        PackingItem(
-                            id = 2,
-                            name = "Pantalone"
-                        ),
-                        PackingItem(
-                            id = 3,
-                            name = "Donji veš"
-                        )
-                    )
-                ),
-                Category(
-                    id = 2,
-                    name = "Ranac",
-                    items = listOf(
-                        PackingItem(
-                            id = 4,
-                            name = "Punjač"
-                        ),
-                        PackingItem(
-                            id = 5,
-                            name = "Slušalice"
-                        )
-                    )
-                ),
-                Category(
-                    id = 3,
-                    name = "Neseser",
-                    items = listOf(
-                        PackingItem(
-                            id = 6,
-                            name = "Četkica za zube"
-                        ),
-                        PackingItem(
-                            id = 7,
-                            name = "Pasta za zube"
-                        )
-                    )
-                )
-            )
-        }
     }
 }

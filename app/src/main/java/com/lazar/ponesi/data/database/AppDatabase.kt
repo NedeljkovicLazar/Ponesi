@@ -66,6 +66,7 @@ abstract class AppDatabase : RoomDatabase() {
                     "ponesi_database"
                 )
                     .addMigrations(MIGRATION_1_2)
+                    .addCallback(InitialDataCallback)
                     .build()
 
                 INSTANCE = instance

@@ -82,6 +82,7 @@
     <!-- Create and edit template -->
     <string name="label_template_name">Naziv šablona</string>
     <string name="label_categories">Kategorije</string>
+    <string name="message_no_categories">Još nema kategorija. Dodaj prvu kategoriju da bi sačuvao šablon.</string>
     <string name="title_add_category">Dodaj kategoriju</string>
     <string name="title_edit_category">Izmeni kategoriju</string>
     <string name="title_edit_item">Izmeni stavku</string>

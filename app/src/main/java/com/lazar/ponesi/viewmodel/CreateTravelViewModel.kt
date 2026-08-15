@@ -1,6 +1,6 @@
 package com.lazar.ponesi.viewmodel
-import android.util.Log
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lazar.ponesi.data.model.Category
@@ -245,6 +245,7 @@ class CreateTravelViewModel(
             categories = updatedCategories
         )
     }
+
     fun showEditCategoryDialog(categoryId: Int) {
 
         val category = _uiState.value.categories.find { category ->

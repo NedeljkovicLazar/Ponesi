@@ -1,4 +1,5 @@
 package com.lazar.ponesi.viewmodel
+import android.util.Log
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -206,7 +207,11 @@ class CreateTravelViewModel(
                     isSaving = false
                 )
 
-                exception.printStackTrace()
+                Log.e(
+                    "CreateTravelViewModel",
+                    "Failed to save travel",
+                    exception
+                )
             }
         }
     }

@@ -2,13 +2,13 @@ package com.lazar.ponesi.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lazar.ponesi.data.model.TravelStatus
 import com.lazar.ponesi.data.repository.TravelRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
-import com.lazar.ponesi.data.model.TravelStatus
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class TravelDetailsViewModel(

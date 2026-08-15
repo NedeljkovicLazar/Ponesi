@@ -8,9 +8,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.lazar.ponesi.ui.theme.Dimens
 import androidx.compose.ui.res.stringResource
 import com.lazar.ponesi.R
+import com.lazar.ponesi.ui.theme.Dimens
+
 @Composable
 fun BottomActionButtons(
     onDocumentsClick: () -> Unit,

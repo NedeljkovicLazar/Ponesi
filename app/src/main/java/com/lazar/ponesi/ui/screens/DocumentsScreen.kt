@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lazar.ponesi.R
 import com.lazar.ponesi.data.model.SavedDocument
@@ -36,7 +37,6 @@ import com.lazar.ponesi.ui.components.AppTopBar
 import com.lazar.ponesi.ui.components.DocumentCard
 import com.lazar.ponesi.ui.theme.Dimens
 import com.lazar.ponesi.viewmodel.DocumentsViewModel
-import androidx.core.net.toUri
 
 @Composable
 fun DocumentsScreen(

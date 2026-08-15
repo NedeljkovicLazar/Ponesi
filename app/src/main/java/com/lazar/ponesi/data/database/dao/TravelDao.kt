@@ -10,9 +10,10 @@ import com.lazar.ponesi.data.database.entity.CategoryEntity
 import com.lazar.ponesi.data.database.entity.PackingItemEntity
 import com.lazar.ponesi.data.database.entity.TravelEntity
 import com.lazar.ponesi.data.database.relation.TravelWithCategories
-import kotlinx.coroutines.flow.Flow
 import com.lazar.ponesi.data.model.TravelStatus
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
+
 @Dao
 interface TravelDao {
 

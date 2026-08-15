@@ -103,7 +103,6 @@
     <!-- Travel details -->
     <string name="message_category_empty">Ova kategorija nema stavke.</string>
     <string name="message_travel_not_found">Putovanje nije pronađeno.</string>
-    <string name="message_trip_ready_to_start">Datum putovanja je stigao. Putovanje je spremno za pokretanje.</string>
     <string name="title_start_travel">Pokreni „%1$s“?</string>
     <string name="message_start_travel">Pokretanjem putovanja sve stavke biće poništene kako bi checklist bila spremna za novo pakovanje.</string>
     <string name="title_finish_travel">Završi putovanje?</string>

@@ -4,5 +4,7 @@ import com.lazar.ponesi.data.model.Travel
 
 data class TravelDetailsUiState(
     val travel: Travel? = null,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val destinationWeather: WeatherUiState = WeatherUiState(),
+    val locationSearch: LocationSearchUiState = LocationSearchUiState()
 )

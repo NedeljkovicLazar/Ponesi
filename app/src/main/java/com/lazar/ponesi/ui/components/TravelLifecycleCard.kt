@@ -54,6 +54,10 @@ fun TravelLifecycleCard(
         DateTimeFormatter.ofPattern("dd.MM.yyyy.")
     )
 
+    val formattedStartDate = travel.startDate?.format(
+        DateTimeFormatter.ofPattern("dd.MM.yyyy.")
+    )
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(Dimens.CardCornerRadius),
@@ -160,6 +164,16 @@ fun TravelLifecycleCard(
                 }
 
                 TravelStatus.ACTIVE -> {
+                    formattedStartDate?.let { date ->
+                        Text(
+                            text = stringResource(
+                                R.string.status_started_on,
+                                date
+                            ),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = onFinishClick

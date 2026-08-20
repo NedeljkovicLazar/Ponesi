@@ -64,6 +64,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.coil.compose)
+    implementation(libs.kotlinx.coroutines.play.services)
+    implementation(libs.play.services.location)
 
     ksp(libs.androidx.room.compiler)
 }

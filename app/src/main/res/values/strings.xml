@@ -8,6 +8,8 @@
     <string name="title_new_template">Novi šablon</string>
     <string name="title_edit_template">Izmeni šablon</string>
     <string name="title_travel_details">Lista za pakovanje</string>
+    <string name="title_history">Istorija putovanja</string>
+    <string name="title_history_details">Detalji putovanja</string>
 
     <!-- General actions -->
     <string name="action_back">Nazad</string>
@@ -35,9 +37,22 @@
     <string name="action_add_document">+ Dodaj dokument</string>
     <string name="action_open_document">Otvori</string>
     <string name="action_delete_document">Obriši dokument</string>
+    <string name="action_choose_date">Izaberi datum</string>
+    <string name="action_finish_today">Danas</string>
+    <string name="action_add_location">Dodaj lokaciju</string>
+    <string name="action_change_location">Promeni</string>
+    <string name="action_remove_location">Ukloni</string>
+    <string name="action_refresh_weather">Osveži prognozu</string>
+    <string name="action_show_local_weather">Prikaži vreme na mojoj lokaciji</string>
+    <string name="action_open_history">Otvori putovanje</string>
+    <string name="action_add_photo">Dodaj fotografiju</string>
+    <string name="action_change_photo">Promeni fotografiju</string>
+    <string name="action_remove_photo">Ukloni fotografiju</string>
+    <string name="action_delete_history">Obriši iz istorije</string>
 
     <!-- Home -->
     <string name="button_documents">Dokumenta</string>
+    <string name="button_history">Istorija</string>
     <string name="button_new_template">Novi šablon</string>
     <string name="title_delete_template">Obriši šablon?</string>
     <string name="message_delete_template">Da li sigurno želiš da obrišeš šablon „%1$s“? Ova radnja se ne može poništiti.</string>
@@ -78,6 +93,7 @@
     </plurals>
 
     <string name="status_scheduled_for">Datum putovanja: %1$s</string>
+    <string name="status_started_on">Početak putovanja: %1$s</string>
 
     <!-- Create and edit template -->
     <string name="label_template_name">Naziv šablona</string>
@@ -100,12 +116,60 @@
     <string name="message_delete_document">Da li sigurno želiš da obrišeš dokument „%1$s“ iz aplikacije?</string>
     <string name="message_document_open_failed">Dokument nije moguće otvoriti. Moguće je da je fajl premešten ili obrisan.</string>
 
+    <!-- Location and weather -->
+    <string name="title_destination">Destinacija</string>
+    <string name="title_choose_location">Izaberi destinaciju</string>
+    <string name="title_destination_weather">Prognoza za destinaciju</string>
+    <string name="title_current_location_weather">Vreme na trenutnoj lokaciji</string>
+    <string name="label_search_city">Grad ili mesto</string>
+    <string name="message_no_destination">Lokacija nije dodata. Dodaj je da bi video vremensku prognozu.</string>
+    <string name="message_location_search_hint">Unesi najmanje dva slova, zatim izaberi odgovarajuće mesto.</string>
+    <string name="message_location_search_failed">Pretraga trenutno nije dostupna. Proveri internet vezu.</string>
+    <string name="message_location_not_found">Nije pronađeno odgovarajuće mesto.</string>
+    <string name="message_location_permission_weather">Dozvoli približnu lokaciju kako bi se ovde prikazala lokalna vremenska prognoza. Ostatak aplikacije radi i bez ove dozvole.</string>
+    <string name="message_current_location_unavailable">Trenutnu lokaciju nije moguće odrediti. Proveri da li je lokacija uključena i pokušaj ponovo.</string>
+    <string name="message_weather_unavailable">Prognoza trenutno nije dostupna. Ostale funkcije aplikacije rade bez interneta.</string>
+    <string name="message_forecast_not_yet_available">Prognoza za datum putovanja još nije dostupna. Pojaviće se kada putovanje bude u narednih 16 dana.</string>
+    <string name="message_cached_weather">Prikazana je poslednja sačuvana prognoza (%1$s).</string>
+    <string name="weather_temperature_range">%1$d° / %2$d°</string>
+    <string name="weather_precipitation">%1$d%%</string>
+    <string name="weather_attribution">Vremenski podaci: Open-Meteo</string>
+    <string name="weather_clear">Vedro</string>
+    <string name="weather_partly_cloudy">Delimično oblačno</string>
+    <string name="weather_cloudy">Oblačno</string>
+    <string name="weather_fog">Magla</string>
+    <string name="weather_drizzle">Rosulja</string>
+    <string name="weather_rain">Kiša</string>
+    <string name="weather_snow">Sneg</string>
+    <string name="weather_thunderstorm">Grmljavina</string>
+    <string name="weather_changeable">Promenljivo vreme</string>
+
+    <!-- Travel history -->
+    <string name="message_history_empty">Još nema završenih putovanja. Kada završiš putovanje, ono će se automatski pojaviti ovde.</string>
+    <string name="message_history_not_found">Putovanje iz istorije nije pronađeno.</string>
+    <string name="message_no_history_photo">Fotografija nije dodata</string>
+    <string name="history_photo_description">Fotografija putovanja</string>
+    <string name="label_history_title">Naziv putovanja</string>
+    <string name="label_history_location">Lokacija</string>
+    <string name="label_start_date">Datum početka</string>
+    <string name="label_end_date">Datum završetka</string>
+    <string name="label_duration">Trajanje putovanja</string>
+    <string name="value_no_location">Lokacija nije sačuvana</string>
+    <string name="title_delete_history">Obriši putovanje iz istorije?</string>
+    <string name="message_delete_history">Da li sigurno želiš da obrišeš „%1$s“? Ova radnja se ne može poništiti.</string>
+
+    <plurals name="history_duration_days">
+        <item quantity="one">%1$d dan</item>
+        <item quantity="few">%1$d dana</item>
+        <item quantity="other">%1$d dana</item>
+    </plurals>
+
     <!-- Travel details -->
     <string name="message_category_empty">Ova kategorija nema stavke.</string>
     <string name="message_travel_not_found">Putovanje nije pronađeno.</string>
     <string name="title_start_travel">Pokreni „%1$s“?</string>
     <string name="message_start_travel">Pokretanjem putovanja sve stavke biće poništene kako bi checklist bila spremna za novo pakovanje.</string>
     <string name="title_finish_travel">Završi putovanje?</string>
-    <string name="message_finish_travel">Putovanje će postati neaktivno, a sve stavke biće poništene.</string>
+    <string name="message_finish_travel">Izaberi datum završetka. Putovanje će biti sačuvano u istoriji, a šablon i sve stavke biće vraćeni u početno stanje.</string>
 
 </resources>

@@ -7,5 +7,7 @@ data class Travel(
     val name: String,
     val status: TravelStatus,
     val categories: List<Category> = emptyList(),
-    val date: LocalDate? = null
+    val date: LocalDate? = null,
+    val startDate: LocalDate? = null,
+    val location: TravelLocation? = null
 )

@@ -4,6 +4,7 @@ import com.lazar.ponesi.data.database.relation.TravelWithCategories
 import com.lazar.ponesi.data.model.Category
 import com.lazar.ponesi.data.model.PackingItem
 import com.lazar.ponesi.data.model.Travel
+import com.lazar.ponesi.data.model.TravelLocation
 
 fun TravelWithCategories.toTravel(): Travel {
     return Travel(
@@ -31,6 +32,20 @@ fun TravelWithCategories.toTravel(): Travel {
                 )
             },
 
-        date = travel.date
+        date = travel.date,
+        startDate = travel.startDate,
+        location = if (
+            travel.locationName != null &&
+            travel.locationLatitude != null &&
+            travel.locationLongitude != null
+        ) {
+            TravelLocation(
+                name = travel.locationName,
+                latitude = travel.locationLatitude,
+                longitude = travel.locationLongitude
+            )
+        } else {
+            null
+        }
     )
 }

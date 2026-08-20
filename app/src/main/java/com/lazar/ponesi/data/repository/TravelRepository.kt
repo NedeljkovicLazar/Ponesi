@@ -5,9 +5,11 @@ import com.lazar.ponesi.data.database.AppDatabase
 import com.lazar.ponesi.data.database.entity.CategoryEntity
 import com.lazar.ponesi.data.database.entity.PackingItemEntity
 import com.lazar.ponesi.data.database.entity.TravelEntity
+import com.lazar.ponesi.data.database.entity.TravelHistoryEntity
 import com.lazar.ponesi.data.mapper.toTravel
 import com.lazar.ponesi.data.model.Category
 import com.lazar.ponesi.data.model.Travel
+import com.lazar.ponesi.data.model.TravelLocation
 import com.lazar.ponesi.data.model.TravelStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -150,20 +152,59 @@ class TravelRepository(
         travelId: Int,
         date: LocalDate
     ) {
-        travelDao.updateTravelStatusAndDate(
-            travelId = travelId,
-            status = TravelStatus.SCHEDULED,
-            date = date
+        val existingTravel = travelDao
+            .getTravelWithCategories(travelId)
+            ?.travel
+            ?: return
+
+        travelDao.updateTravel(
+            existingTravel.copy(
+                status = TravelStatus.SCHEDULED,
+                date = date,
+                startDate = null
+            )
         )
     }
 
     suspend fun cancelScheduledTravel(
         travelId: Int
     ) {
-        travelDao.updateTravelStatusAndDate(
-            travelId = travelId,
-            status = TravelStatus.INACTIVE,
-            date = null
+        val existingTravel = travelDao
+            .getTravelWithCategories(travelId)
+            ?.travel
+            ?: return
+
+        travelDao.updateTravel(
+            existingTravel.copy(
+                status = TravelStatus.INACTIVE,
+                date = null,
+                startDate = null,
+                locationName = null,
+                locationLatitude = null,
+                locationLongitude = null
+            )
+        )
+    }
+
+    suspend fun updateTravelLocation(
+        travelId: Int,
+        location: TravelLocation?
+    ) {
+        val existingTravel = travelDao
+            .getTravelWithCategories(travelId)
+            ?.travel
+            ?: return
+
+        if (existingTravel.status == TravelStatus.INACTIVE) {
+            return
+        }
+
+        travelDao.updateTravel(
+            existingTravel.copy(
+                locationName = location?.name,
+                locationLatitude = location?.latitude,
+                locationLongitude = location?.longitude
+            )
         )
     }
 
@@ -172,27 +213,70 @@ class TravelRepository(
     ) {
         database.withTransaction {
 
+            val existingTravel = travelDao
+                .getTravelWithCategories(travelId)
+                ?.travel
+                ?: return@withTransaction
+
+            val today = LocalDate.now()
+
+            val startDate = existingTravel.date
+                ?.takeIf { scheduledDate ->
+                    !scheduledDate.isAfter(today)
+                }
+                ?: today
+
             travelDao.uncheckAllItemsForTravel(travelId)
 
-            travelDao.updateTravelStatusAndDate(
-                travelId = travelId,
-                status = TravelStatus.ACTIVE,
-                date = null
+            travelDao.updateTravel(
+                existingTravel.copy(
+                    status = TravelStatus.ACTIVE,
+                    date = null,
+                    startDate = startDate
+                )
             )
         }
     }
 
     suspend fun finishTravel(
-        travelId: Int
+        travelId: Int,
+        endDate: LocalDate = LocalDate.now()
     ) {
         database.withTransaction {
 
+            val existingTravel = travelDao
+                .getTravelWithCategories(travelId)
+                ?.travel
+                ?: return@withTransaction
+
+            val startDate = existingTravel.startDate
+                ?: existingTravel.date
+                ?: endDate
+
+            require(!endDate.isBefore(startDate)) {
+                "End date cannot be before start date."
+            }
+
+            database.travelHistoryDao().insertHistory(
+                TravelHistoryEntity(
+                    title = existingTravel.name,
+                    locationName = existingTravel.locationName,
+                    startDate = startDate,
+                    endDate = endDate
+                )
+            )
+
             travelDao.uncheckAllItemsForTravel(travelId)
 
-            travelDao.updateTravelStatusAndDate(
-                travelId = travelId,
-                status = TravelStatus.INACTIVE,
-                date = null
+            travelDao.updateTravel(
+                existingTravel.copy(
+                    status = TravelStatus.INACTIVE,
+                    date = null,
+                    startDate = null,
+                    locationName = null,
+                    locationLatitude = null,
+                    locationLongitude = null
+                )
             )
         }
     }

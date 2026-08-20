@@ -17,5 +17,13 @@ data class TravelEntity(
 
     val status: TravelStatus = TravelStatus.INACTIVE,
 
-    val date: LocalDate? = null
+    val date: LocalDate? = null,
+
+    val startDate: LocalDate? = null,
+
+    val locationName: String? = null,
+
+    val locationLatitude: Double? = null,
+
+    val locationLongitude: Double? = null
 )

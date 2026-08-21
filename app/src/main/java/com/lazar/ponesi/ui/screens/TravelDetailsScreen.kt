@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,7 +29,10 @@ import com.lazar.ponesi.R
 import com.lazar.ponesi.data.model.TravelStatus
 import com.lazar.ponesi.ui.components.AppTopBar
 import com.lazar.ponesi.ui.components.ChecklistCategoryCard
+import com.lazar.ponesi.ui.components.LocationSearchDialog
 import com.lazar.ponesi.ui.components.TravelLifecycleCard
+import com.lazar.ponesi.ui.components.TravelLocationCard
+import com.lazar.ponesi.ui.components.WeatherForecastCard
 import com.lazar.ponesi.ui.theme.Dimens
 import com.lazar.ponesi.viewmodel.TravelDetailsViewModel
 import java.time.LocalDate
@@ -50,6 +54,10 @@ fun TravelDetailsScreen(
     }
 
     var showFinishDialog by remember {
+        mutableStateOf(false)
+    }
+
+    var showLocationDialog by remember {
         mutableStateOf(false)
     }
 
@@ -95,7 +103,6 @@ fun TravelDetailsScreen(
             )
         }
     ) { paddingValues ->
-
         when {
             uiState.isLoading -> {
                 Box(
@@ -140,7 +147,6 @@ fun TravelDetailsScreen(
                     item {
                         TravelLifecycleCard(
                             travel = travel,
-
                             onScheduleClick = {
                                 val today = LocalDate.now()
 
@@ -150,31 +156,29 @@ fun TravelDetailsScreen(
                                     }
                                     ?: today
 
-                                val datePickerDialog =
-                                    DatePickerDialog(
-                                        context,
-                                        {
-                                                _,
-                                                year,
-                                                month,
-                                                dayOfMonth ->
+                                val datePickerDialog = DatePickerDialog(
+                                    context,
+                                    { _, year, month, dayOfMonth ->
+                                        val selectedDate = LocalDate.of(
+                                            year,
+                                            month + 1,
+                                            dayOfMonth
+                                        )
 
-                                            val selectedDate =
-                                                LocalDate.of(
-                                                    year,
-                                                    month + 1,
-                                                    dayOfMonth
-                                                )
+                                        travelDetailsViewModel
+                                            .scheduleTravel(selectedDate)
 
-                                            travelDetailsViewModel
-                                                .scheduleTravel(
-                                                    selectedDate
-                                                )
-                                        },
-                                        initialDate.year,
-                                        initialDate.monthValue - 1,
-                                        initialDate.dayOfMonth
-                                    )
+                                        if (
+                                            travel.location == null &&
+                                            selectedDate.isAfter(today)
+                                        ) {
+                                            showLocationDialog = true
+                                        }
+                                    },
+                                    initialDate.year,
+                                    initialDate.monthValue - 1,
+                                    initialDate.dayOfMonth
+                                )
 
                                 datePickerDialog.datePicker.minDate =
                                     today
@@ -186,20 +190,57 @@ fun TravelDetailsScreen(
 
                                 datePickerDialog.show()
                             },
-
                             onCancelScheduleClick = {
                                 travelDetailsViewModel
                                     .cancelScheduledTravel()
                             },
-
                             onStartClick = {
                                 showStartDialog = true
                             },
-
                             onFinishClick = {
                                 showFinishDialog = true
                             }
                         )
+                    }
+
+                    if (travel.status != TravelStatus.INACTIVE) {
+                        item {
+                            TravelLocationCard(
+                                location = travel.location,
+                                onAddOrChangeClick = {
+                                    showLocationDialog = true
+                                },
+                                onRemoveClick = {
+                                    travelDetailsViewModel
+                                        .removeLocation()
+                                }
+                            )
+                        }
+
+                        if (travel.location != null) {
+                            item {
+                                WeatherForecastCard(
+                                    title = stringResource(
+                                        R.string.title_destination_weather
+                                    ),
+                                    weatherState =
+                                        uiState.destinationWeather,
+                                    highlightedDate =
+                                        if (
+                                            travel.status ==
+                                            TravelStatus.SCHEDULED
+                                        ) {
+                                            travel.date
+                                        } else {
+                                            null
+                                        },
+                                    onRetryClick = {
+                                        travelDetailsViewModel
+                                            .refreshDestinationWeather()
+                                    }
+                                )
+                            }
+                        }
                     }
 
                     items(
@@ -208,10 +249,8 @@ fun TravelDetailsScreen(
                             category.id
                         }
                     ) { category ->
-
                         ChecklistCategoryCard(
                             category = category,
-
                             onItemCheckedChange = {
                                     itemId,
                                     isChecked ->
@@ -223,9 +262,7 @@ fun TravelDetailsScreen(
                                         isChecked = isChecked
                                     )
                             },
-
                             onSetAllChecked = { isChecked ->
-
                                 travelDetailsViewModel
                                     .setCategoryItemsChecked(
                                         categoryId = category.id,
@@ -244,7 +281,6 @@ fun TravelDetailsScreen(
             onDismissRequest = {
                 showStartDialog = false
             },
-
             title = {
                 Text(
                     text = stringResource(
@@ -253,7 +289,6 @@ fun TravelDetailsScreen(
                     )
                 )
             },
-
             text = {
                 Text(
                     text = stringResource(
@@ -261,7 +296,6 @@ fun TravelDetailsScreen(
                     )
                 )
             },
-
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -276,7 +310,6 @@ fun TravelDetailsScreen(
                     )
                 }
             },
-
             dismissButton = {
                 TextButton(
                     onClick = {
@@ -293,12 +326,11 @@ fun TravelDetailsScreen(
         )
     }
 
-    if (showFinishDialog) {
+    if (showFinishDialog && currentTravel != null) {
         AlertDialog(
             onDismissRequest = {
                 showFinishDialog = false
             },
-
             title = {
                 Text(
                     text = stringResource(
@@ -306,7 +338,6 @@ fun TravelDetailsScreen(
                     )
                 )
             },
-
             text = {
                 Text(
                     text = stringResource(
@@ -314,22 +345,74 @@ fun TravelDetailsScreen(
                     )
                 )
             },
-
             confirmButton = {
-                TextButton(
-                    onClick = {
-                        travelDetailsViewModel.finishTravel()
-                        showFinishDialog = false
-                    }
-                ) {
-                    Text(
-                        text = stringResource(
-                            R.string.action_finish_travel
+                Row {
+                    TextButton(
+                        onClick = {
+                            showFinishDialog = false
+
+                            val today = LocalDate.now()
+                            val startDate = currentTravel.startDate
+                                ?: today
+
+                            val datePickerDialog = DatePickerDialog(
+                                context,
+                                { _, year, month, dayOfMonth ->
+                                    travelDetailsViewModel.finishTravel(
+                                        LocalDate.of(
+                                            year,
+                                            month + 1,
+                                            dayOfMonth
+                                        )
+                                    )
+                                },
+                                today.year,
+                                today.monthValue - 1,
+                                today.dayOfMonth
+                            )
+
+                            datePickerDialog.datePicker.minDate =
+                                startDate
+                                    .atStartOfDay(
+                                        ZoneId.systemDefault()
+                                    )
+                                    .toInstant()
+                                    .toEpochMilli()
+
+                            datePickerDialog.datePicker.maxDate =
+                                today
+                                    .atStartOfDay(
+                                        ZoneId.systemDefault()
+                                    )
+                                    .toInstant()
+                                    .toEpochMilli()
+
+                            datePickerDialog.show()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.action_choose_date
+                            )
                         )
-                    )
+                    }
+
+                    TextButton(
+                        onClick = {
+                            travelDetailsViewModel.finishTravel(
+                                LocalDate.now()
+                            )
+                            showFinishDialog = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.action_finish_today
+                            )
+                        )
+                    }
                 }
             },
-
             dismissButton = {
                 TextButton(
                     onClick = {
@@ -342,6 +425,24 @@ fun TravelDetailsScreen(
                         )
                     )
                 }
+            }
+        )
+    }
+
+    if (showLocationDialog) {
+        LocationSearchDialog(
+            searchState = uiState.locationSearch,
+            onQueryChange = { query ->
+                travelDetailsViewModel
+                    .onLocationQueryChange(query)
+            },
+            onLocationSelected = { location ->
+                travelDetailsViewModel.selectLocation(location)
+                showLocationDialog = false
+            },
+            onDismiss = {
+                travelDetailsViewModel.clearLocationSearch()
+                showLocationDialog = false
             }
         )
     }

@@ -2,6 +2,7 @@ package com.lazar.ponesi.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Sort
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -21,10 +22,12 @@ fun AppTopBar(
     showBackButton: Boolean = false,
     showFilter: Boolean = false,
     showSort: Boolean = false,
+    showEdit: Boolean = false,
 
     onBackClick: () -> Unit = {},
     onFilterClick: () -> Unit = {},
-    onSortClick: () -> Unit = {}
+    onSortClick: () -> Unit = {},
+    onEditClick: () -> Unit = {}
 ) {
 
     CenterAlignedTopAppBar(
@@ -45,7 +48,9 @@ fun AppTopBar(
 
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = stringResource(R.string.action_back)
+                        contentDescription = stringResource(
+                            R.string.action_back
+                        )
                     )
 
                 }
@@ -56,6 +61,23 @@ fun AppTopBar(
 
         actions = {
 
+            if (showEdit) {
+
+                IconButton(
+                    onClick = onEditClick
+                ) {
+
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = stringResource(
+                            R.string.action_edit
+                        )
+                    )
+
+                }
+
+            }
+
             if (showFilter) {
 
                 IconButton(
@@ -64,13 +86,14 @@ fun AppTopBar(
 
                     Icon(
                         imageVector = Icons.Default.FilterList,
-                        contentDescription = stringResource(R.string.action_filter)
+                        contentDescription = stringResource(
+                            R.string.action_filter
+                        )
                     )
 
                 }
 
             }
-
 
             if (showSort) {
 
@@ -80,7 +103,9 @@ fun AppTopBar(
 
                     Icon(
                         imageVector = Icons.Default.Sort,
-                        contentDescription = stringResource(R.string.action_sort)
+                        contentDescription = stringResource(
+                            R.string.action_sort
+                        )
                     )
 
                 }

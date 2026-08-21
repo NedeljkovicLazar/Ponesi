@@ -1,5 +1,9 @@
 package com.lazar.ponesi.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,31 +15,39 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lazar.ponesi.R
 import com.lazar.ponesi.data.model.Travel
 import com.lazar.ponesi.ui.components.AppTopBar
 import com.lazar.ponesi.ui.components.BottomActionButtons
+import com.lazar.ponesi.ui.components.CurrentLocationWeatherPrompt
 import com.lazar.ponesi.ui.components.TravelCard
 import com.lazar.ponesi.ui.components.TravelFilterDialog
 import com.lazar.ponesi.ui.components.TravelSortDialog
+import com.lazar.ponesi.ui.components.WeatherForecastCard
 import com.lazar.ponesi.ui.theme.Dimens
 import com.lazar.ponesi.viewmodel.HomeViewModel
 
 @Composable
 fun HomeScreen(
+    onHistoryClick: () -> Unit,
     onDocumentsClick: () -> Unit,
     onCreateTravelClick: () -> Unit,
     onTravelClick: (Int) -> Unit,
     onEditTravelClick: (Int) -> Unit,
     homeViewModel: HomeViewModel
 ) {
+    val context = LocalContext.current
+
     val travels by homeViewModel
         .travels
         .collectAsStateWithLifecycle()
@@ -47,6 +59,40 @@ fun HomeScreen(
     val selectedSort by homeViewModel
         .selectedSort
         .collectAsStateWithLifecycle()
+
+    val weatherUiState by homeViewModel
+        .weatherUiState
+        .collectAsStateWithLifecycle()
+
+    var hasLocationPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val locationPermissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            hasLocationPermission = isGranted
+
+            if (isGranted) {
+                homeViewModel.loadCurrentLocationWeather()
+            }
+        }
+
+    LaunchedEffect(hasLocationPermission) {
+        if (
+            hasLocationPermission &&
+            weatherUiState.forecast == null &&
+            !weatherUiState.isLoading
+        ) {
+            homeViewModel.loadCurrentLocationWeather()
+        }
+    }
 
     var showFilterDialog by remember {
         mutableStateOf(false)
@@ -79,6 +125,7 @@ fun HomeScreen(
 
         bottomBar = {
             BottomActionButtons(
+                onHistoryClick = onHistoryClick,
                 onDocumentsClick = onDocumentsClick,
                 onCreateTemplateClick = onCreateTravelClick
             )
@@ -96,6 +143,29 @@ fun HomeScreen(
                 Dimens.SpacingMedium
             )
         ) {
+            item {
+                if (hasLocationPermission) {
+                    WeatherForecastCard(
+                        title = stringResource(
+                            R.string.title_current_location_weather
+                        ),
+                        weatherState = weatherUiState,
+                        onRetryClick = {
+                            homeViewModel
+                                .loadCurrentLocationWeather()
+                        }
+                    )
+                } else {
+                    CurrentLocationWeatherPrompt(
+                        onRequestLocationClick = {
+                            locationPermissionLauncher.launch(
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            )
+                        }
+                    )
+                }
+            }
+
             if (travels.isEmpty()) {
                 item {
                     Text(

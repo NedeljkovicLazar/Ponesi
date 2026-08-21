@@ -7,6 +7,9 @@ Ponesi je Android aplikacija za pravljenje i organizovanje lista za pakovanje. A
 * Kreiranje, izmena i brisanje šablona za putovanja
 * Organizovanje stvari po kategorijama
 * Zakazivanje, pokretanje i završavanje putovanja
+* Opciona destinacija i vremenska prognoza za zakazana i aktivna putovanja
+* Prognoza za približnu trenutnu lokaciju korisnika
+* Istorija završenih putovanja sa datumima, lokacijom i fotografijom
 * Označavanje spakovanih stvari
 * Filtriranje i sortiranje putovanja
 * Čuvanje i otvaranje PDF i slikovnih dokumenata
@@ -19,6 +22,10 @@ Ponesi je Android aplikacija za pravljenje i organizovanje lista za pakovanje. A
 * Room
 * MVVM arhitektura
 * Material 3
+* Open-Meteo API
+* Google Play services Location
+
+Aplikacija zadržava osnovne funkcionalnosti i bez internet veze. Vremenski podaci su obezbeđeni putem [Open-Meteo](https://open-meteo.com/).
 
 ## Pokretanje projekta
 

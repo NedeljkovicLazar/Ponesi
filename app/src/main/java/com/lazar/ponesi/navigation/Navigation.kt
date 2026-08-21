@@ -11,10 +11,14 @@ import androidx.navigation.navArgument
 import com.lazar.ponesi.PonesiApplication
 import com.lazar.ponesi.ui.screens.CreateTravelScreen
 import com.lazar.ponesi.ui.screens.DocumentsScreen
+import com.lazar.ponesi.ui.screens.HistoryDetailsScreen
+import com.lazar.ponesi.ui.screens.HistoryScreen
 import com.lazar.ponesi.ui.screens.HomeScreen
 import com.lazar.ponesi.ui.screens.TravelDetailsScreen
 import com.lazar.ponesi.viewmodel.CreateTravelViewModel
 import com.lazar.ponesi.viewmodel.DocumentsViewModel
+import com.lazar.ponesi.viewmodel.HistoryDetailsViewModel
+import com.lazar.ponesi.viewmodel.HistoryViewModel
 import com.lazar.ponesi.viewmodel.HomeViewModel
 import com.lazar.ponesi.viewmodel.TravelDetailsViewModel
 
@@ -23,6 +27,15 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
 
     object Documents : Screen("documents")
+
+    object History : Screen("history")
+
+    object HistoryDetails : Screen("history_details/{historyId}") {
+
+        fun createRoute(historyId: Int): String {
+            return "history_details/$historyId"
+        }
+    }
 
     object CreateTravel : Screen("create_travel")
 
@@ -58,11 +71,17 @@ fun AppNavigation() {
 
             val homeViewModel: HomeViewModel = viewModel {
                 HomeViewModel(
-                    travelRepository = application.travelRepository
+                    travelRepository = application.travelRepository,
+                    weatherRepository = application.weatherRepository,
+                    currentLocationProvider =
+                        application.currentLocationProvider
                 )
             }
 
             HomeScreen(
+                onHistoryClick = {
+                    navController.navigate(Screen.History.route)
+                },
                 onDocumentsClick = {
                     navController.navigate(Screen.Documents.route)
                 },
@@ -80,6 +99,58 @@ fun AppNavigation() {
                     )
                 },
                 homeViewModel = homeViewModel
+            )
+        }
+
+        composable(Screen.History.route) {
+
+            val historyViewModel: HistoryViewModel = viewModel {
+                HistoryViewModel(
+                    travelHistoryRepository =
+                        application.travelHistoryRepository
+                )
+            }
+
+            HistoryScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onHistoryClick = { historyId ->
+                    navController.navigate(
+                        Screen.HistoryDetails.createRoute(historyId)
+                    )
+                },
+                historyViewModel = historyViewModel
+            )
+        }
+
+        composable(
+            route = Screen.HistoryDetails.route,
+            arguments = listOf(
+                navArgument("historyId") {
+                    type = NavType.IntType
+                }
+            )
+        ) { backStackEntry ->
+
+            val historyId =
+                backStackEntry.arguments?.getInt("historyId")
+                    ?: return@composable
+
+            val historyDetailsViewModel: HistoryDetailsViewModel =
+                viewModel {
+                    HistoryDetailsViewModel(
+                        travelHistoryRepository =
+                            application.travelHistoryRepository,
+                        historyId = historyId
+                    )
+                }
+
+            HistoryDetailsScreen(
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                historyDetailsViewModel = historyDetailsViewModel
             )
         }
 
@@ -138,6 +209,8 @@ fun AppNavigation() {
                     TravelDetailsViewModel(
                         travelRepository =
                             application.travelRepository,
+                        weatherRepository =
+                            application.weatherRepository,
                         travelId = travelId
                     )
                 }

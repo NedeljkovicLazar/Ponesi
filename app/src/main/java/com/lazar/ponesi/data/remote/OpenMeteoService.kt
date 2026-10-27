@@ -84,12 +84,24 @@ class OpenMeteoService {
         val minimumTemperatures = daily.getJSONArray(
             "temperature_2m_min"
         )
-        val precipitationProbabilities = daily.getJSONArray(
+        val precipitationProbabilities = daily.optJSONArray(
             "precipitation_probability_max"
         )
 
         val days = buildList {
             for (index in 0 until dates.length()) {
+                if (
+                    dates.isNull(index) ||
+                    index >= weatherCodes.length() ||
+                    weatherCodes.isNull(index) ||
+                    index >= minimumTemperatures.length() ||
+                    minimumTemperatures.isNull(index) ||
+                    index >= maximumTemperatures.length() ||
+                    maximumTemperatures.isNull(index)
+                ) {
+                    continue
+                }
+
                 add(
                     DailyWeather(
                         date = LocalDate.parse(
@@ -101,7 +113,11 @@ class OpenMeteoService {
                         maximumTemperature = maximumTemperatures
                             .getDouble(index),
                         precipitationProbability =
-                            if (precipitationProbabilities.isNull(index)) {
+                            if (
+                                precipitationProbabilities == null ||
+                                index >= precipitationProbabilities.length() ||
+                                precipitationProbabilities.isNull(index)
+                            ) {
                                 0
                             } else {
                                 precipitationProbabilities.getInt(index)
@@ -109,6 +125,12 @@ class OpenMeteoService {
                     )
                 )
             }
+        }
+
+        if (days.isEmpty()) {
+            throw IOException(
+                "Open-Meteo response did not contain usable forecast data."
+            )
         }
 
         return WeatherForecast(

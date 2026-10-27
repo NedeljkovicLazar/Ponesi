@@ -34,16 +34,18 @@ class WeatherRepository(
                 longitude = longitude
             )
 
+            val forecast = openMeteoService.parseForecast(
+                response = response,
+                fetchedAtMillis = fetchedAt
+            )
+
             preferences.edit()
                 .putString(responseKey(cacheKey), response)
                 .putLong(timeKey(cacheKey), fetchedAt)
                 .apply()
 
             WeatherLoadResult(
-                forecast = openMeteoService.parseForecast(
-                    response = response,
-                    fetchedAtMillis = fetchedAt
-                ),
+                forecast = forecast,
                 isFromCache = false
             )
         } catch (exception: Exception) {
@@ -51,11 +53,19 @@ class WeatherRepository(
                 throw exception
             }
 
-            val cachedResponse = preferences.getString(
-                responseKey(cacheKey),
-                null
-            ) ?: throw exception
+            loadCachedForecast(cacheKey) ?: throw exception
+        }
+    }
 
+    private fun loadCachedForecast(
+        cacheKey: String
+    ): WeatherLoadResult? {
+        val cachedResponse = preferences.getString(
+            responseKey(cacheKey),
+            null
+        ) ?: return null
+
+        return try {
             WeatherLoadResult(
                 forecast = openMeteoService.parseForecast(
                     response = cachedResponse,
@@ -66,6 +76,13 @@ class WeatherRepository(
                 ),
                 isFromCache = true
             )
+        } catch (_: Exception) {
+            preferences.edit()
+                .remove(responseKey(cacheKey))
+                .remove(timeKey(cacheKey))
+                .apply()
+
+            null
         }
     }
 

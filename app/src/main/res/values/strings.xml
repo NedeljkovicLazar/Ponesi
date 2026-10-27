@@ -129,7 +129,7 @@
     <string name="message_location_permission_weather">Dozvoli približnu lokaciju kako bi se ovde prikazala lokalna vremenska prognoza. Ostatak aplikacije radi i bez ove dozvole.</string>
     <string name="message_current_location_unavailable">Trenutnu lokaciju nije moguće odrediti. Proveri da li je lokacija uključena i pokušaj ponovo.</string>
     <string name="message_weather_unavailable">Prognoza trenutno nije dostupna. Ostale funkcije aplikacije rade bez interneta.</string>
-    <string name="message_forecast_not_yet_available">Prognoza za datum putovanja još nije dostupna. Pojaviće se kada putovanje bude u narednih 16 dana.</string>
+    <string name="message_forecast_not_yet_available">Prognoza za datum putovanja još nije dostupna. Pokušaj ponovo kasnije.</string>
     <string name="message_cached_weather">Prikazana je poslednja sačuvana prognoza (%1$s).</string>
     <string name="weather_temperature_range">%1$d° / %2$d°</string>
     <string name="weather_precipitation">%1$d%%</string>
